@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+*{transition: all .1s ease-in-out 0s;}
+
+html, body, #synko-app, .switch-wrapper, .switch-wrapper>div {
+  height : 100%;
+  background-color: #374151;
+  overflow: hidden;
+}
+
+::-webkit-scrollbar {
+  width: 14px;
+  height: 18px;
+}
+
+::-webkit-scrollbar-thumb {
+  height: 6px;
+  border: 4px solid rgba(0, 0, 0, 0);
+  background-clip: padding-box;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 7px;
+  box-shadow: inset -1px -1px 0px rgba(0, 0, 0, 0.05),
+    inset 1px 1px 0px rgba(0, 0, 0, 0.05);
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background-color : rgba(0, 0, 0, 0.7);
+  cursor : pointer;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: transparent;
+}
+
+#left-menu>div::-webkit-scrollbar{
+  display: none;
+}
+
+.forgotPass .digit div {
+	display: flex;
+	align-items: center;
+  justify-content: space-between;
+}
+
+.forgotPass .digit input[type="number"] {
+	width: 2rem;
+	line-height: 1;
+	padding: 5px;
+  	margin: .1rem;
+	font-size: 1.6rem;
+	text-align: center;
+	appearance: textfield;
+	-webkit-appearance: textfield;
+	color: #9CA3AF;
+	border-radius: 4px;
+  	background: #374151;
+}
+
+.forgotPass .digit input::-webkit-outer-spin-button,
+.forgotPass .digit input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.forgotPass .digit input[type="number"]:nth-child(n+4) {
+	order: 2;
+}
+
+.forgotPass .digit div::before {
+	content: '';
+	height: 2px;
+	width: 24px;
+	margin: 0 .25em;
+	order: 1;
+	background: #374151;
+}
+
+.forgotPass .digit label {
+	border: 0 !important;
+	clip: rect(1px, 1px, 1px, 1px) !important;
+	-webkit-clip-path: inset(50%) !important;
+	clip-path: inset(50%) !important;
+	height: 1px !important;
+	margin: -1px !important;
+	overflow: hidden !important;
+	padding: 0 !important;
+	position: absolute !important;
+	width: 1px !important;
+	white-space: nowrap !important;
+}
+
+.notif-loader {
+	animation: notifLoader 10s linear;
+	position: absolute;
+	bottom: 0;
+	left:0;
+	top:0;
+	border-radius: 5px;
+	background: white;
+	opacity: .2;
+	width: 100%;
+}
+
+aside.emoji-picker-react {
+	box-shadow: none !important;
+	background: #1F2937 !important;
+	border: none !important;
+}
+
+aside.emoji-picker-react .emoji-search {
+	background: #1F2937 !important;
+	border: solid gray 1px !important;
+	margin: 0 !important;
+	color: white !important;
+}
+
+aside.emoji-picker-react .skin-tones-list {
+	margin-top: 5px !important;
+}
+
+aside.emoji-picker-react .emoji-group::before {
+	background: #1F2937 !important;
+	text-align: start;
+}
+
+aside.emoji-picker-react .emoji-categories button {
+	filter: invert(1) !important;
+}
+
+aside.emoji-picker-react .emoji:hover {
+	color: #374151 !important;
+}
+
+.btn-dropdown:hover ~ .msg-dropdown, .msg-dropdown:hover {
+	display: block;
+}
+
+#msgSender:empty:before {
+	content: attr(data-placeholder);
+}
+
+@keyframes notifLoader {
+	from{
+		width: 0px;
+	} to {
+		width: 100%;
+	}
+}
+
+.animate-bg-pulse {
+	animation: abg_pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes abg_pulse {
+	0%, 100% {
+	  	background: rgba(68, 77, 93, 1);
+	}
+	50% {
+		background: rgba(68, 77, 93, .5);
+	}
+  }

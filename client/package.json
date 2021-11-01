@@ -1,0 +1,103 @@
+{
+  "name": "synko-beta",
+  "homepage": "./",
+  "author": "Kunah & GenoWeb",
+  "description": "synko client",
+  "main": "./public/electron.js",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "@craco/craco": "^6.1.2",
+    "animate.css": "^4.1.1",
+    "axios": "^0.21.1",
+    "concurrently": "^6.2.0",
+    "electron-is-dev": "^2.0.0",
+    "electron-log": "^4.4.1",
+    "electron-store": "^8.0.0",
+    "electron-updater": "^4.3.9",
+    "emoji-picker-react": "^3.4.8",
+    "emoji-unicode": "^2.0.1",
+    "html-react-parser": "^1.4.0",
+    "jquery": "^3.6.0",
+    "js-video-url-parser": "^0.4.3",
+    "linkify-html": "^3.0.2",
+    "linkify-react": "^3.0.1",
+    "linkifyjs": "^3.0.1",
+    "node-emoji": "^1.11.0",
+    "path": "^0.12.7",
+    "react": "^17.0.2",
+    "react-contenteditable": "^3.3.6",
+    "react-dom": "^17.0.2",
+    "react-icons": "^4.2.0",
+    "react-player": "^2.9.0",
+    "react-router-dom": "^5.2.0",
+    "react-scripts": "^4.0.3",
+    "react-slick": "^0.28.1",
+    "react-tooltip": "^4.2.21",
+    "styled-components": "^5.3.0",
+    "wait-on": "^6.0.0",
+    "web-vitals": "^1.0.1",
+    "websocket": "^1.0.34",
+    "xss-filters": "^1.2.7"
+  },
+  "scripts": {
+    "dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "start": "craco start",
+    "build": "craco build",
+    "electron-build": "npm run build && electron-builder build --win --publish always",
+    "test": "craco test",
+    "eject": "react-scripts eject",
+    "ebuild": "npm run build && node_modules/.bin/build"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "electron": "^13.1.5",
+    "electron-builder": "^22.11.7",
+    "postcss": "^7.0.35",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.4"
+  },
+  "build": {
+    "appId": "com.synko.app",
+    "productName": "Synko Client",
+    "artifactName": "${productName}.${ext}",
+    "electronUpdaterCompatibility": ">= 2.16",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "public"
+    },
+    "nsis": {
+      "installerIcon": "public/icon.ico",
+      "installerHeaderIcon": "public/icon.ico",
+      "deleteAppDataOnUninstall": true
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "public/icon.ico",
+      "publish": {
+        "provider": "generic",
+        "url": "http://localhost:4060/files/"
+      }
+    }
+  }
+}

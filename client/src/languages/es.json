@@ -1,0 +1,71 @@
+{
+    "username" : "Nombre de usuario",
+    "password" : "Contraseña",
+    "error" : "Se produjo un error, inténtelo de nuevo más tarde.",
+    "success" : "Editado con éxito",
+    "reset" : "Reiniciar",
+    "save" : "Ahorrar",
+    "delete_group": "Eliminar grupo",
+    "selectLang" : "Elige tu idioma",
+    "newMsgGroup" : "Nuevo grupo",
+    "settings" : "Ajustes",
+    "createNewGroup" : "Crear nuevo grupo",
+    "login": {
+        "username": "Nombre de usuario",
+        "password": "Contraseña",
+        "email": "Email",
+        "welcome": "Bienvenido de nuevo !",
+        "creds": "Solo necesitamos verificar que recuerde sus datos de inicio de sesión",
+        "register_message": "Estamos felices de verte, comencemos creando una cuenta",
+        "forgot": "Contraseña olvidada ?",
+        "register_link": "Crear una cuenta",
+        "login_btn": "Conectarse",
+        "login_link": "Ya inscrito",
+        "register_btn": "Inscribirse"
+    },
+    "group" : {
+        "name" : "Nombre",
+        "avatar" : "Avatar (URL)",
+        "searchUser" : "Buscar usuarios",
+        "create" : "Crear",
+        "close" : "Cerrar"
+    },
+    "home" : {
+        "hey" : [
+            "Holà", " Nos alegra verte aquí !"
+        ],
+        "exp" : [
+            "Ahora puedes chatear con tus amigos o hacerte nuevos uniéndote a algunos grupos.",
+            "Por supuesto, no olvides que es un lugar para relajarte, así que respeta a todos, no seas malévolo y ¡diviértete!"
+        ]
+    },
+    "dm": {
+        "sendMessage": "Enviar un mensaje",
+        "emojiSearch": "Encuentra un emoji"
+    },
+    "message": {
+        "copy_id": "Copiar ID de mensaje",
+        "delete_message": "Borrar mensaje",
+        "copy_text": "Copiar el texto del mensaje"
+    },
+    "forgotPw": {
+        "forgot": "Olvidaste tu contraseña ?",
+        "newPW": "No hay problema ! Elijamos uno nuevo",
+        "accMail": "Email",
+        "6digit": "Código de 6 dígitos",
+        "number": "Número",
+        "password": "Contraseña",
+        "sendMail": "Enviar un correo"
+    },
+    "emojisGroups": {
+        "smileys_people": "Emoticones y personas",
+        "animals_nature": "Animales y Naturaleza",
+        "food_drink": "Comida y bebida",
+        "travel_places": "Viajes y lugares",
+        "activities": "Ocupaciones",
+        "objects": "Objetos",
+        "symbols": "Simbolos",
+        "flags": "Banderas",
+        "recently_used": "Recientemente usado"
+    }
+}

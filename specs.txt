@@ -1,0 +1,14 @@
+Each message group must be structured like this : 
+{
+    id int : randNum,
+    participants Array<string> : ["1st id", "2nd id"...],
+    messages Array<Object> : [
+      {
+        id int :  randNum,
+        content string : "something",
+        author string : author_id,
+        date int : TS_Date,
+        attachments Array<Object> : []
+      }
+    ]
+  }

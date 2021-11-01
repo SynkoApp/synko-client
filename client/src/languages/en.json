@@ -1,0 +1,71 @@
+{
+    "username" : "Username",
+    "password" : "Password",
+    "error" : "An error occured, please try again later.",
+    "success" : "Successfully edited",
+    "reset" : "Reset",
+    "save" : "Save",
+    "delete_group": "Delete message group",
+    "selectLang" : "Select your language",
+    "newMsgGroup" : "New message group",
+    "settings" : "Settings",
+    "createNewGroup" : "Create new group",
+    "login": {
+        "username": "Username",
+        "password": "Password",
+        "email": "Email",
+        "welcome": "Welcome back !",
+        "creds": "We just need to verify that you remember your credentials",
+        "register_message": "We're happy to see you, let's start by creating your account",
+        "forgot": "Forgot password ?",
+        "register_link": "Register an account",
+        "login_btn": "Login",
+        "login_link": "Already registered",
+        "register_btn": "Register"
+    },
+    "group" : {
+        "name" : "Name",
+        "avatar" : "Avatar (URL)",
+        "searchUser" : "Search users",
+        "create" : "Create",
+        "close" : "Close"
+    },
+    "home" : {
+        "hey" : [
+            "Hey", " ! We're glad to see you here !"
+        ],
+        "exp" : [
+            "Now you are free to chat with your friends, or make new ones by joining some groups",
+            "Of course, don't forget that it's a place to chill, so respect everyone, don't be malevolent, and just have fun !"
+        ]
+    },
+    "dm": {
+        "sendMessage": "Send a message",
+        "emojiSearch": "Search an emoji"
+    },
+    "message": {
+        "copy_id": "Copy message ID",
+        "delete_message": "Delete message",
+        "copy_text": "Copy message text"
+    },
+    "forgotPw": {
+        "forgot": "Forgot your password ?",
+        "newPW": "No problem ! Let's choose a new one",
+        "accMail": "account email",
+        "6digit": "6-digit code",
+        "number": "Number",
+        "password": "Password",
+        "sendMail": "Send a mail"
+    },
+    "emojisGroups": {
+        "smileys_people": "Smileys & People",
+        "animals_nature": "Animals & Nature",
+        "food_drink": "Food & Drink",
+        "travel_places": "Travel & Places",
+        "activities": "Activities",
+        "objects": "Objects",
+        "symbols": "Symbols",
+        "flags": "Flags",
+        "recently_used": "Recently used"
+    }
+}

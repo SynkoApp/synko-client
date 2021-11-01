@@ -1,0 +1,71 @@
+{
+    "username" : "Nom d'utilisateur",
+    "password" : "Mot de passe",
+    "error" : "Une erreur s'est produite, veuillez réessayer plus tard.",
+    "success" : "Modifié avec succès",
+    "reset" : "Réinitialiser",
+    "save" : "Sauvegarder",
+    "delete_group": "Suprimer le groupe",
+    "selectLang" : "Choisir une langue",
+    "newMsgGroup" : "Nouveau groupe",
+    "settings" : "Paramètres",
+    "createNewGroup" : "Créer un nouveau groupe",
+    "login": {
+        "username": "Nom d'utilisateur",
+        "password": "Mot de passe",
+        "email": "Email",
+        "welcome": "Bon retour parmi nous !",
+        "creds": "On a juste besoin de vérifier que tu te rappelles de tes identifiants",
+        "register_message": "On est heureux de te voir, commençons par te créer un compte",
+        "forgot": "Mot de passe oublié ?",
+        "register_link": "Créer un compte",
+        "login_btn": "Se connecter",
+        "login_link": "Déjà inscrit",
+        "register_btn": "S'inscrire"
+    },
+    "group" : {
+        "name" : "Nom",
+        "avatar" : "Avatar (URL)",
+        "searchUser" : "Rechercher des utilisateurs",
+        "create" : "Créer",
+        "close" : "Fermer"
+    },
+    "home" : {
+        "hey" : [
+            "Salut", " ! Nous sommes heureux de te voir ici !"
+        ],
+        "exp" : [
+            "Maintenant tu es libre de parler avec tes amis, ou de t'en faire des nouveaux en rejoignant des groupes !",
+            "Biensur, n'oublie pas que c'est un endroit pour se détendre, alors respecte les autres, ne sois pas malveillant, et amuse toi !"
+        ]
+    },
+    "dm": {
+        "sendMessage": "Envoyer un message",
+        "emojiSearch": "Chercher un emoji"
+    },
+    "message": {
+        "copy_id": "Copier l'ID du message",
+        "delete_message": "Supprimer le message",
+        "copy_text": "Copier le texte"
+    },
+    "forgotPw": {
+        "forgot": "Tu as oublié ton mot de passe ?",
+        "newPW": "Pas de problème ! On va en choisir un nouveau",
+        "accMail": "ton email",
+        "6digit": "Code a 6 chiffres",
+        "number": "Nombre",
+        "password": "Mot de passe",
+        "sendMail": "Envoyer un mail"
+    },
+    "emojisGroups": {
+        "smileys_people": "Emotes et Personnes",
+        "animals_nature": "Animaux et Nature",
+        "food_drink": "Nourriture et Boisson",
+        "travel_places": "Voyages et Lieux",
+        "activities": "Activités",
+        "objects": "Objets",
+        "symbols": "Symboles",
+        "flags": "Drapeaux",
+        "recently_used": "Utilisés récemment"
+    }
+}
