@@ -7,12 +7,12 @@ module.exports = {
       },
 
       width : {
-        "input" : "98%"
+        "input" : "98%",
+        "avatar" : "44px"
       },
-
-      minHeight: {
-        "12": "3rem",
-        "20": "5rem"
+      
+      height: {
+        "avatar" : "44px"
       },
 
       backgroundColor : {
@@ -30,6 +30,7 @@ module.exports = {
       },
 
       minHeight: {
+        "12": "3rem",
         "16": "4rem",
         "20": "5rem",
         "24": "6rem",
