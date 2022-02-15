@@ -67,6 +67,7 @@ export default class Dm extends React.Component {
             let tknValidation = await checkToken(localStorage.getItem('token'), localStorage.getItem('username'))
             if(tknValidation.status === 200){
                 this.connect();
+                this.updateScroll();
                 return this.getMessages();
             }
         }
