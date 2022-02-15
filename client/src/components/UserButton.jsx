@@ -21,10 +21,10 @@ export default class UserButton extends React.Component {
             return <Redirect to={this.state.redirect}/>
         }
         return (
-            <div onClick={()=>{this.props.click ? this.props.click() : this.setState({redirect : `/dm/${this.props.id}`})}} className={`rounded-full cursor-pointer mb-2 flex items-center justify-center h-12 w-12 min-h-12 bg-gray-800 ${window.location.hash == `#/dm/${this.props.id}` ? ' border-2 border-blue-500' : ''}`}>
+            <div onClick={()=>{this.props.click ? this.props.click() : this.setState({redirect : `/dm/${this.props.id}`})}} className={`rounded-full cursor-pointer mb-2 flex items-center justify-center h-12 w-12 min-h-12 max-h-12 bg-gray-800 ${window.location.hash == `#/dm/${this.props.id}` ? ' border-2 border-blue-500' : ''}`}>
                 {this.props.newMsg ? <AiOutlinePlus className={'text-3xl text-green-600'}/> : this.props.home ? <AiOutlineHome className={'text-3xl text-green-600'}/> : this.props.settings ? <BiCog className={"text-3xl text-green-600"} /> :
                 <div onContextMenu={(e)=>{if(document.querySelector('#ctx-menu.block')){document.querySelector('#ctx-menu.block').classList.replace('block', 'hidden')};this.setState({ctxMenu: {isOpened: true, group: this.props.id, top: e.clientY, owner: this.props.owner}})}}>
-                    <img data-tip={this.props.newMsg ? lang.newMsgGroup : this.props.settings ? lang.settings : this.props.username} className={"rounded-full h-full w-full"} alt="" src={API_URL+'/proxy/i?url='+this.props.img}/>  
+                    <img data-tip={this.props.newMsg ? lang.newMsgGroup : this.props.settings ? lang.settings : this.props.username} className={"rounded-full h-avatar w-avatar"} alt="" src={API_URL+'/proxy/i?url='+this.props.img}/>  
                     <CtxMenu ws={this.props.ws} {...this.state.ctxMenu} />
                 </div>}
                 <ReactTooltip className={'font-semibold text-5xl'} backgroundColor="rgba(17, 24, 39, 1)" effect="solid" place="right"/>
