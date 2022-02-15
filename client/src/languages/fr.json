@@ -6,7 +6,14 @@
     "reset" : "Réinitialiser",
     "save" : "Sauvegarder",
     "delete_group": "Suprimer le groupe",
+    "openEditor": "Ouvrir l'éditeur de code",
+    "sharecode": "Partager du code",
+    "sendCode": "Envoyer",
+    "closeCode": "Fermer",
     "selectLang" : "Choisir une langue",
+    "changeProfilePic": "Changer la photo de profil",
+    "invalidExt": "Extension non supportée",
+    "apply": "Valider",
     "newMsgGroup" : "Nouveau groupe",
     "settings" : "Paramètres",
     "createNewGroup" : "Créer un nouveau groupe",
@@ -46,7 +53,8 @@
     "message": {
         "copy_id": "Copier l'ID du message",
         "delete_message": "Supprimer le message",
-        "copy_text": "Copier le texte"
+        "copy_text": "Copier le texte",
+        "copy_code": "Copier le code"
     },
     "forgotPw": {
         "forgot": "Tu as oublié ton mot de passe ?",

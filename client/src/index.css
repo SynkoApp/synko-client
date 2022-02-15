@@ -10,6 +10,10 @@ html, body, #synko-app, .switch-wrapper, .switch-wrapper>div {
   overflow: hidden;
 }
 
+#msgSender::before {
+	cursor: text;
+}
+
 ::-webkit-scrollbar {
   width: 14px;
   height: 18px;

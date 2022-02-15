@@ -23,10 +23,9 @@ export default class Login extends React.Component {
     }
 
     componentDidMount() {
-        let _lang = localStorage.getItem('language');
+        let _lang = localStorage.getItem('language') || "en";
         localStorage.clear();
         localStorage.setItem('language', _lang);
-        console.log(lang)
     }
 
     login(e){

@@ -15,6 +15,10 @@ import Picker from 'emoji-picker-react';
 import { renderToString } from 'react-dom/server';
 import {retrieveImageFromDataToBase64} from '../utils/functions';
 import ContentEditable from 'react-contenteditable';
+import { clipboard } from '../utils/electron';
+import { BsPlusCircleFill } from 'react-icons/bs'
+import IDE from 'react-ace';
+import Code from '../components/Code'
 let lang = require('../languages/lang.config').default[localStorage.getItem('language')||"en"]?.file;
 
 export default class Dm extends React.Component {
@@ -37,17 +41,23 @@ export default class Dm extends React.Component {
     }
 
     async getMessages(){
-        let req = await axios({
-            url : `${API_URL}/getMessages/${this.props.match.params.id}`,
-            method : "get",
-            headers : {
-                "Authorization" : `${localStorage.getItem('token')}`
-            }
-        });
-        this.setState({ messages: req.data.messages, users: req.data.users });
-        setTimeout(() => {
-            this.updateScroll();
-        });
+        try {
+            let req = await axios({
+                url : `${API_URL}/getMessages/${this.props.match.params.id}`,
+                method : "get",
+                headers : {
+                    "Authorization" : `${localStorage.getItem('token')}`
+                }
+            });
+            this.setState({ messages: req.data.messages, users: req.data.users });
+            setTimeout(() => {
+                this.updateScroll();
+            });
+        } catch(err) {
+            return this.setState({
+                redirect: "/"
+            });
+        }
     }
 
     async componentDidMount(){
@@ -143,9 +153,20 @@ export default class Dm extends React.Component {
             if(data.type == "new_message"){
                 setTimeout(() => {
                     let user = this.state.users.find(u => u.id == data.author);
-                    let array = this.state.messages;
-                    array.push()
-                    $("#messages-box").append(renderToString(<Message author={user} message={{id: data.id, date: data.date, attachments: data.attachments}} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
+                    if(data.content.startsWith('\`\`\`') && data.content.endsWith('\`\`\`')){
+                        this.setState({messages : [...this.state.messages, data]})
+                    } else $("#messages-box").append(renderToString(<Message deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
+                    $(`#msg-${data.id} > div:last-of-type > ul li`).each((i, elem) => {
+                        $(elem.children[0]).on('click', () => {
+                            if($(elem).hasClass("cpy-btn")) {
+                                clipboard.writeText(data.content, "clipboard");
+                            } else if($(elem).hasClass("cid-btn")) {
+                                clipboard.writeText(`${data.id}`, "clipboard");
+                            } else if($(elem).hasClass("dlt-btn")) {
+                                this.deleteMessage(data.id);
+                            }
+                        });
+                    });
                 }, 0)
                 setTimeout(() => {
                     this.updateScroll();
@@ -154,8 +175,14 @@ export default class Dm extends React.Component {
                 $(`#msg-${data.id}`).remove();
             } else if(data.type == "new_group") {
                 let { group } = data;
-                $("#groups-ctn").append(renderToString(<UserButton ws={this.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />));
-                
+                $("#groups-ctn").append(renderToString(<UserButton ws={this.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />)); 
+            } else if(data.type == "deleted_group"){
+                $(`#group-${data.id}`).remove();
+                if(this.props.match.params.id == data.id) {
+                    this.setState({
+                        redirect: "/"
+                    });                    
+                }
             }
         }
         ws.onclose = () => {
@@ -288,6 +315,17 @@ export default class Dm extends React.Component {
         }
     }
 
+    sendCode(code, lang){
+        let msgObject = {
+            type:"new_message", 
+            msg: `\`\`\`${lang}\n${code}\`\`\``, 
+            token: localStorage.getItem('token'),
+            attachments: [...this.state.attachments.files]
+        }
+        this.state.socket.send(JSON.stringify(msgObject));
+        document.querySelector('#ide-modal').classList.replace('flex', 'hidden')
+    }
+
     render (){
         if(this.state.redirect){
             return <Redirect to={this.state.redirect}/>
@@ -304,28 +342,152 @@ export default class Dm extends React.Component {
                         </div>
                     </div>
                     <ImageSendModal setParentState={this.setParentState.bind(this)} onSend={this.sendMessage.bind(this)} open={this.state.attachments.open} images={this.state.attachments.files} message={this.state.attachments.message}/>
+                    <IdeModal send={this.sendCode.bind(this)}/>
                     <div id="messages-box" onDragOver={this.handleDragOver.bind(this)} onDragEnter={this.handleDragStart.bind(this)} className={'flex-grow overflow-auto w-full'}>
-                        {this.state.messages.map(m => <Message deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>)}
+                        {this.state.messages.map(m => { 
+                            if(m.content.startsWith('\`\`\`') && m.content.endsWith('\`\`\`')) return <Code deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{m.content}</Code>
+                            else return <Message deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} message={{id: m.id, date: m.date, attachments: m.attachments, links: m.links}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>
+                        })}
                     </div>
                     <div id="input-ctn" className={'min-h-20 shadow-input py-2 z-30 pt-0 text-center px-4'}>
                         <div id="emoji-picker" className={'absolute bottom-24 right-4 hidden z-20'} key={Math.floor(Math.random()*Date.now())}>
                             <Picker onEmojiClick={this.handleEmojisSelect} groupNames={lang.emojisGroups} />
                         </div>
+                        <div className={'group'}>
+                            <BsPlusCircleFill style={{bottom: '3.15rem'}} className={'absolute left-7 z-10 text-gray-400 text-xl cursor-pointer hover:text-gray-200'}/>
+                            <div className={'absolute left-7 bottom-16 pb-4 z-10 hidden group-hover:block'}>
+                                <ul className={'p-1 rounded text-gray-200 bg-gray-800'}>
+                                    <li onClick={() => { document.querySelector('#ide-modal').classList.replace('hidden', 'flex') }} className={'hover:bg-gray-650 p-2 font-semibold hover:text-white cursor-pointer rounded'}>{lang.openEditor}</li>
+                                </ul>
+                            </div>
+                        </div>
                         <div id="sender-ctn" className={'absolute w-full left-0 bottom-10 px-4'} >
-                            <ContentEditable 
+                            <ContentEditable
+                             
                                 html={""}
                                 data-placeholder={lang.dm.sendMessage+'...'}
                                 id="msgSender"
                                 onPaste={this.handlePaste.bind(this)}
                                 onKeyPress={(e)=>{
-                                    if(e.key == "Enter") this.sendMessage(e, this);}
-                                } 
+                                    if(e.key == "Enter" && !e.shiftKey) this.sendMessage(e, this);
+                                }} 
                                 placeholder={lang.dm.sendMessage+'...'}
-                                className={'overflow-hidden text-left shadow-input w-full bg-gray-650 h-min max-h-96 rounded-md px-4 py-2 pr-10 focus:outline-none text-gray-200'}
+                                className={'overflow-auto items-start text-left shadow-input w-full bg-gray-650 h-min max-h-96 rounded-md px-10 py-2 focus:outline-none text-gray-200'}
                             />
                         </div>
                         <img onClick={this.handleEmojiPicker} className={'absolute right-5 bottom-11 w-8 filter grayscale transition-all cursor-pointer hover:filter-none'} src="./emojis/smileys_and_emotion/1f602.webp" alt="emoji-menu" />
                         {this.state.error ? <span className={"text-xxs absolute left-8 bottom-6 select-none text-red-500"}>{this.state.error}</span> : ""}
+                    </div>
+                </div>
+            </div>
+        )
+    }
+}
+
+class IdeModal extends React.Component {
+    constructor(props){
+        super(props)
+        this.state = {
+            codeLang : "javascript"
+        }
+        this.codeLanguages = [
+            {lname:"actionscript",dname:"ActionScript"}, {lname:"apache_conf",dname:"Apache conf."},
+            {lname:"applescript",dname:"AppleScript"}, {lname:"asciidoc",dname:"ASCII Doc"},
+            {lname:"assembly_x86",dname:"Assembly (x86)"},
+            
+            {lname:"batchfile",dname:"Batchfile"},
+
+            {lname:"c_cpp",dname:"C/C++"}, {lname:"objectivec",dname:"Objective-C"}, {lname:"csharp",dname:"C#"},
+
+            {lname:"clojure",dname:"Clojure"},
+
+            {lname:"coffee",dname:"CoffeeScript (JS)"},
+            {lname:"ejs",dname:"EJS"}, {lname:"elm",dname:"ELM (JS)"},
+            {lname:"javascript",dname:"JavaScript"}, {lname:"jsx",dname:"JSX"}, 
+            {lname:"tsx",dname:"TSX"}, {lname:"typescript",dname:"TypeScript"}, 
+
+            {lname:"css",dname:"CSS"}, {lname:"sass",dname:"Sass"}, {lname:"scss",dname:"SCSS"}, {lname:"less",dname:"Less"}, 
+
+            {lname:"dart",dname:"Dart"},
+            {lname:"dockerfile",dname:"Dockerfile"},
+
+            {lname:"elixir",dname:"Elixir"},
+            {lname:"erlang",dname:"Erlang"},
+
+            {lname:"fortran",dname:"Fortran"},
+
+            {lname:"glsl",dname:"OpenGL Shading Language"},
+            {lname:"golang",dname:"Golang"},
+            {lname:"graphqlschema",dname:"GraphQL Schema"},
+
+            {lname:"haml",dname:"Haml"},
+            {lname:"haskell",dname:"Haskell"},
+            {lname:"html",dname:"HTML"},
+
+            {lname:"ini",dname:"ini"},
+
+            {lname:"jade",dname:"Jade"},
+            {lname:"java",dname:"Java"}, {lname:"kotlin",dname:"Kotlin (Java)"},
+            {lname:"json",dname:"JSON"},
+
+            {lname:"lua",dname:"Lua"},
+
+            {lname:"markdown",dname:"Markdown"},
+            {lname:"matlab",dname:"MATLAB"},
+
+            {lname:"pascal",dname:"Pascal"},
+            {lname:"perl",dname:"Perl"},
+            {lname:"php",dname:"PHP"},
+            {lname:"plain_text",dname:"Plain text"},
+            {lname:"powershell",dname:"PowerShell"},
+            {lname:"python",dname:"Python"}, {lname:"django",dname:"Django (Python)"},
+
+            {lname:"r",dname:"R"}, 
+            {lname:"ruby",dname:"Ruby"}, {lname:"curly",dname:"Curly (Ruby)"},
+            {lname:"rust",dname:"Rust"},
+
+            {lname:"scala",dname:"Scala"},
+            {lname:"mysql",dname:"MySQL"}, {lname:"sql",dname:"SQL"},
+            {lname:"sqlserver",dname:"SQL Server"}, {lname:"pgsql",dname:"PostgreSQL"}, 
+            {lname:"swift",dname:"Swift"},
+
+            {lname:"twig",dname:"Twig"},
+
+            {lname:"vbscript",dname:"VBScript"},
+
+            {lname:"xml",dname:"XML"},
+            {lname:"yaml",dname:"Yaml"},
+        ]
+    }
+
+    render(){
+        require(`ace-builds/src-min-noconflict/mode-${this.state.codeLang}`)
+        require('ace-builds/src-min-noconflict/theme-tomorrow_night')
+        require('ace-builds/src-min-noconflict/ext-error_marker')
+        require('ace-builds/src-min-noconflict/ext-language_tools')
+        return(
+            <div id="ide-modal" className={'absolute hidden items-center justify-center z-50 w-full h-full bg-black bg-opacity-40'}>
+                <div className={`bg-gray-750 w-1/2 rounded absolute inset-auto flex flex-col items-center pt-2 p-6 z-10`}>
+                    <h2 className={"text-gray-200 font-semibold"}>{lang.sharecode}</h2>
+                    <select onChange={(e) => {this.setState({codeLang: e.target.value})}} className={'bg-gray-700 mb-2 text-gray-200 rounded'}>
+                        {this.codeLanguages.map(c => {
+                            return <option key={c.lname} value={c.lname}>{c.dname}</option>
+                        })}
+                    </select>
+                    <IDE onChange={(e) => {
+                        this.setState({code: e})
+                    }} id="ide" mode={this.state.codeLang} fontSize={14} setOptions={{
+                        enableBasicAutocompletion: true,
+                        enableLiveAutocompletion: true,
+                        enableSnippets: true,
+                        showLineNumbers: true,
+                        tabSize: 4,
+                        useWorker: false
+                    }} theme={'tomorrow_night'} style={{width: "100%", height: "400px"}}/>
+                    <div className={'flex w-full mt-2'}>
+                        <button onClick={() => {document.querySelector('#ide-modal').classList.replace('flex', 'hidden')}} className={'text-blue-500 underline'}>{lang.closeCode}</button>
+                        <div className={'flex-grow'}></div>
+                        <button onClick={e => {e.preventDefault(); this.props.send(this.state.code, this.state.codeLang)}} className={'bg-green-500 font-semibold text-white rounded py-1 px-2'}>{lang.sendCode}</button>
                     </div>
                 </div>
             </div>
@@ -346,8 +508,6 @@ class ImageSendModal extends React.Component {
                     <h2 className={"text-gray-200 font-semibold"}>Send image</h2>
                     <div className={'block mx-auto my-4 relative'}>
                         <Slider images={this.props.images}/>
-                        {/* <span className={'uppercase w-full text-left text-gray-400 text-xxs font-semibold'}>{this.props.file.name} - {(this.props.file.size / (1024*1024)).toFixed(2)}MB</span>
-                        <img className={"rounded block w-full"} src={this.props.image}/> */}
                     </div>
                     <label className={'uppercase w-full text-left text-gray-400 text-xxs font-semibold'} htmlFor='grpname'>Message</label>
                     <div className={'w-full relative mb-4'}>

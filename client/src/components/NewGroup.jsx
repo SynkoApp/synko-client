@@ -84,7 +84,6 @@ export default class NewGroup extends React.Component {
         } else {
             window.removeEventListener('keydown', this.handleEscape.bind(this))
         }
-        console.log(this.state.usersToAdd);
         return (
             <div className={`${this.props.open} bg-gray-750 w-1/3 rounded shadow-custom absolute inset-auto flex flex-col items-center py-2 p-6 z-10`}>
                 <h2 className={"text-gray-200 font-semibold"}>{lang.createNewGroup}</h2>

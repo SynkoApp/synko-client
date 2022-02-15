@@ -14,14 +14,17 @@ const CryptoJS = require('crypto-js');
 const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
 const path = require('path');
-const cheerio = require('cheerio');
+const UrlParser = require('url-parse');
+const fetch = require('node-fetch')
+const { parse: HTML } = require('node-html-parser');
 const { default: axios } = require('axios');
 const { default: validator } = require('validator');
-let users = new db.table('users')
-let groups = new db.table('groups')
+let users = new db.table('users');
+let groups = new db.table('groups');
+let links = new db.table('links');
 const { v4: uuidv4 } = require('uuid');
 require('dotenv').config({path : "./.env"});
-let key = process.env.KEY
+let key = process.env.KEY;
 app.use(cors())
 app.use(express.json())
 app.use(fileUpload())
@@ -39,6 +42,7 @@ const transporter = nodemailer.createTransport({
     }
 });
 
+
 /* groups.all().forEach(e => {
     groups.delete(`${e.ID}`)
 }) 
@@ -48,6 +52,9 @@ users.all().forEach(e => {
 }) */
 function isDigit(digit){return/\d{6}/.test(digit);}
 if(users.has('undefined')) users.delete('undefined');
+
+
+//console.log(getLink("youtu.be"))
 
 // Token checking API (POST)
 app.post('/checkToken', (req, res) => {
@@ -226,14 +233,6 @@ app.get('/proxy/:type', (req, res) => {
             });
             break;
         case "m":
-            /*urlMetadata(req.query.url, {
-                userAgent: "Synko Bot",
-                fromEmail: "bot@synko.xyz"
-            }).then(meta => {
-                res.json(meta)
-            }, err => {
-                res.send(err);
-            });*/
             axios({
                 method: "GET",
                 url: `${req.query.url}`,
@@ -241,12 +240,38 @@ app.get('/proxy/:type', (req, res) => {
                     "User-Agent": "Synko Bot"
                 }
             }).then(resp => {
-                if(resp.headers['content-type'].includes('application/octet-stream')) return res.status(400).json({message : "No url provided"});
-                let $ = cheerio.load(resp.data);
-                
-                res.send(metascraper({ html: `${resp.data}`, url: `${resp.config.url}` }));
+                if(!resp.headers['content-type'].includes('text/html')) return res.status(400).json({message : "No url provided"});
+                let $ = HTML(resp.data);
+                let og = {},
+                    meta = {};
+                let title = $.querySelector('head title');
+                if (title) meta.title = title.text;
+                let canonical = $.querySelector('link[rel=canonical]');
+                if (canonical) meta.url = canonical.getAttribute('href');
+                meta.domain = UrlParser(req.query.url).hostname;
+                meta.icon = $.querySelector('link[rel=icon]').getAttribute('href') || $.querySelector('link[rel=shortcut icon]').getAttribute('href') || null;
+                let metas = $.querySelectorAll('head meta');
+                for(let i = 0; i < metas.length; i++) {
+                    let el = metas[i];
+                    ['title', 'description', 'image', 'theme-color'].forEach(s => {
+                        let val = readMT(el, s);
+                        if(val) meta[s] = val;
+                    });
+                    ['og:title', 'og:description', 'og:image', 'og:url', 'og:site_name', 'og:type'].forEach(s => {
+                        let val = readMT(el, s);
+                        if(val) og[s.split(':')[1]] = val;
+                    });
+                }
+                function readMT(el, name) {
+                    var prop = el.getAttribute('name') || el.getAttribute('property');
+                    return prop == name ? el.getAttribute('content') : null;
+                };
+                return res.json({meta, og});
             }).catch(err => {
-                res.send(err);
+                res.json({
+                    error: "Not found",
+                    content: err.message
+                });
             });
             break;
         default:
@@ -254,7 +279,7 @@ app.get('/proxy/:type', (req, res) => {
     }
 });
 
-app.get('/getMessages/:gid', (req, res) => {
+app.get('/getMessages/:gid', async (req, res) => {
     if(req.headers.authorization){
         let id = tokenToID(req.headers.authorization)
         if(!users.has(`${id}`)) return res.status(401).json({message : "Invalid token provided"})
@@ -268,6 +293,19 @@ app.get('/getMessages/:gid', (req, res) => {
         for (let i = 0; i < messages.length; i++) {
             if(messages[i].attachments) {
                 messages[i].attachments = messages[i].attachments.length;
+            }
+            let links = getAllValidesUrls(messages[i].content);
+            if(links.length > 0) {
+                for (let j = 0; j < links.length; j++) {
+                    messages[i].links = []
+                    let url = links[j];
+                    const response = await fetch(`http://localhost:4060/proxy/m?url=${encodeURIComponent(url)}`);
+                    const data = await response.json();
+                    if(data.error) return;
+                    Object.assign(data.meta, data.og);
+                    data.meta.site = url
+                    messages[i].links.push(data.meta)
+                }
             }
         }
         let participants = groups.get(`${user_group}.participants`);
@@ -283,7 +321,7 @@ app.get('/getMessages/:gid', (req, res) => {
         res.json({
             users: users_group,
             messages
-        });
+        })
     } else return res.status(401).json({message : "Invalid token provided"})
 });
 
@@ -401,9 +439,6 @@ app.post('/upload', (req, res) => {
     return res.status(200).json({ message: 'Files were uploaded' });
 });
 
-app.get('*', function(req, res) {
-  res.redirect('https://synko.kunah.xyz')
-})
 
 /*------------------------------------------\
 |-----------------ADMIN API-----------------|
@@ -440,8 +475,8 @@ app.get('*', function(req, res) {
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
             if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
             users.delete(`${req.params.id}`);
-            res.status(202).json({message: "Done"})
-        } res.status(401).json({message : "Unauthorized"})
+            return res.status(202).json({message: "Done"})
+        } return res.status(401).json({message : "Unauthorized"})
     });
 
     app.post('/admin/checkToken', (req, res) => {
@@ -492,7 +527,82 @@ app.get('*', function(req, res) {
                 } else return res.status(403).json({message: "Unavailable username", code: "FORBIDDEN"})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No  token provided"})
-    })
+    });
+
+    app.delete('/admin/links', (req, res) => {
+        if(req.headers.authorization && req.body.id){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                if(links.has(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(req.body.id))}`)) {
+                    links.delete(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(req.body.id))}`);
+                    return res.status(202).json({message: "Done"});
+                } else return res.status(401).json({message: "Url not found"})
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})       
+    });
+
+    app.post('/admin/links', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                let { domain, aliases, desc, why } = req.body;
+                if(!getLink(domain) || !aliases.find(a => Boolean(getLink(a)))) {
+                    links.set(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(domain))}`, {
+                        aliases,
+                        desc,
+                        why,
+                        uses: 0,
+                        certifier: tokenToID(req.headers.authorization),
+                        date: Date.now()
+                    });
+                    return res.status(204).json({message: "Successfully registered"});
+                } else {
+                    return res.status(403).json({message: "Domain as already registered"})
+                }
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})
+    });
+
+    app.patch('/admin/links', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                if(!getLink(req.body.id) || !req.aliases?.find(a => Boolean(getLink(a)))) {
+                    Object.keys(req.body.link).forEach(prop => {
+                        links.set(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(req.body.id))}.${prop}`, req.body.link[prop]);
+                    });
+                    return res.status(204).json({message: "Successfully registered"});
+                } else {
+                    return res.status(403).json({message: "Domain as already registered"})
+                }
+                if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})      
+    });
+
+    app.get('/admin/links', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                let allLinks = [];
+                links.all().forEach(l => {
+                    let obj = {}
+                    let data;
+                    try {
+                        data = JSON.parse(l.data);
+                    } catch(e) {
+                        data = l.data;
+                    }
+                    Object.keys(data).forEach(x => {
+                        obj[x] = x == "date" 
+                            ? new Date(links.get(`${l.ID}.${x}`)).toLocaleString("fr-FR") 
+                            : x == "certifier"
+                                ? users.get(`${links.get(`${l.ID}.${x}`)}.username`) ? users.get(`${links.get(`${l.ID}.${x}`)}.username`) : links.get(`${l.ID}.${x}`)
+                                : links.get(`${l.ID}.${x}`)
+                    })
+                    Object.assign(obj, {domain: CryptoJS.enc.Base64.parse(l.ID).toString(CryptoJS.enc.Utf8)})
+                    allLinks.push(obj);
+                });
+                return res.json(allLinks);
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})
+    });
 
     function isAdmin(id){
         if(users.get(`${id}.permissions`) != "1") return false
@@ -501,6 +611,10 @@ app.get('*', function(req, res) {
 /*------------------------------------------\
 |--------------END ADMIN API----------------|
 \------------------------------------------*/
+
+app.get('*', function(req, res) {
+    res.redirect('https://synko.kunah.xyz')
+})
 
 // Server starting
 app.listen(process.env.PORT, () => {
@@ -545,6 +659,20 @@ function checkUsernameAvailability(str){
     return { available , userData, uuid }
 }
 
+function getLink(link) {
+    let data = null;
+    if(links.has(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(link))}`)) {
+        return link;
+    } else {
+        links.all().forEach(l => {
+            if(links.get(`${l.ID}.aliases`).includes(link)) {
+                data = CryptoJS.enc.Base64.parse(l.ID).toString(CryptoJS.enc.Utf8)
+            }
+        });
+        return data;
+    }
+}
+
 function getUserFromEmail(email) {
     let userData = null;
     users.all().forEach(user => {
@@ -583,6 +711,22 @@ function tokenToID(tkn){
     return id
 }
 
+function getAllValidesUrls(string) {
+    let regexp = /((https?):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))/g;
+    let founds = string.match(regexp);
+    let urls = [];
+    if(!founds) return [];
+    founds.forEach(url => {
+        if(urls.length >= 5) return;
+        let urlParsed = UrlParser(url, true);
+        let link = getLink(urlParsed.hostname);
+        if(link) {
+            urls.push(url);
+        }
+    })
+    return urls;
+}
+
 wsServer.on('request', function(request) {
     let connection = request.accept(null, request.origin);
 
@@ -591,7 +735,7 @@ wsServer.on('request', function(request) {
         onlineUsers.delete(request.key);
     });
 
-    connection.on("message", data => {
+    connection.on("message", async data => {
         let socketData;
         try {
             socketData = JSON.parse(data.utf8Data)
@@ -640,6 +784,19 @@ wsServer.on('request', function(request) {
                     if(attachments.length > 5) {
                         attachments = attachments.splice(5, attachments.length - 5);
                     }
+                    let links = getAllValidesUrls(msg);
+                    if(links.length > 0) {
+                        newMessage.links = [];
+                        for (let i = 0; i < links.length; i++) {
+                            let url = links[i];
+                            const response = await fetch(`http://localhost:4060/proxy/m?url=${encodeURIComponent(url)}`);
+                            const data = await response.json();
+                            if(data.error) return;
+                            Object.assign(data.meta, data.og);
+                            data.meta.site = url
+                            newMessage.links.push(data.meta)
+                        }
+                    } 
                     attachments.forEach(a => {
                         new_attachments.push({
                             src: a.src,
@@ -685,12 +842,26 @@ wsServer.on('request', function(request) {
             }
         } else if(socketData.type == "delete_group"){
             if(groups.get(`${socketData.group}.owner`) == id){
+                let participants = [];
                 groups.get(`${socketData.group}`).participants.forEach(p => {
-                    let user_groups = users.get(`${p.id}.groups`)
-                    user_groups.splice(users.get(`${p.id}.groups`).indexOf(socketData.group), 1)
-                    users.set(`${p.id}.groups`, user_groups)
-                })
-                groups.delete(`${socketData.group}`)
+                    participants.push(p);
+                    let user_groups = users.get(`${p.id}.groups`);
+                    user_groups.splice(users.get(`${p.id}.groups`).indexOf(socketData.group), 1);
+                    users.set(`${p.id}.groups`, user_groups);
+                });
+                groups.delete(`${socketData.group}`);
+                /*webSockets.get(socketData.group).forEach(c => {
+                    c.send(JSON.stringify({type:"deleted_group", id:socketData.group}));
+                });*/
+                console.log(socketData.group)
+                onlineUsers.forEach(u => {
+                    if(participants.find(usr => usr.id == u.uid)) {
+                        u.ws.send(JSON.stringify({
+                            type: "deleted_group",
+                            id: socketData.group
+                        }));
+                    }
+                });
             } else return
         }
     });

@@ -23,7 +23,7 @@ export default class Home extends React.Component {
         if(localStorage.getItem('username') && localStorage.getItem('token')){
             let tknValidation = await checkToken(localStorage.getItem('token'), localStorage.getItem('username'))
             if(tknValidation.status === 200){
-                if(!localStorage.getItem('language')) localStorage.setItem('language', 'en')
+                if(!localStorage.getItem('language')) localStorage.setItem('language', 'en');
                 const connect = () => {
                     let ws = new W3CWebSocket(WS_URL);
                     this.setState({ socket: ws });

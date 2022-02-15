@@ -12,3 +12,10 @@ Each message group must be structured like this :
       }
     ]
   }
+
+
+embed uniquement si title et description1st
+
+d'abord essayer og sinon prendre meta
+
+theme-color toujours utilisé sinon couleur par défaut

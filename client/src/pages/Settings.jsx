@@ -222,17 +222,17 @@ class ProfilePicModal extends React.Component {
     render(){
         return(
             <div className={`${this.props.open} bg-gray-750 w-1/3 rounded shadow-custom absolute inset-auto flex flex-col items-center py-2 p-6 z-10`}>
-                <h2 className={"text-gray-200 font-semibold"}>Change your profile picture</h2>
+                <h2 className={"text-gray-200 font-semibold"}>{langs[localStorage.getItem('language')]?.file.changeProfilePic}</h2>
                 <label className={'uppercase w-full text-left text-gray-400 text-xxs font-semibold'} htmlFor='grpname'>URL</label>
                 <div className={'w-full relative mb-4'}>
                     <input onFocus={(e) => { e.target.select() }} autoComplete={"off"} className={'bg-gray-700 text-gray-200 mt-1 px-2 p-1 rounded focus:outline-none focus:ring-2 w-full'} id="profilePic"/>
                     <small id="pp_err" className={"hidden text-red-500"}>{langs[localStorage.getItem('language')]?.file.error}</small>
-                    <small id="ext_err" className={"hidden text-red-500"}>Invalid extension ({["png", "jpg", "jfif", "gif", "webp"].join(', ')})</small>
+                    <small id="ext_err" className={"hidden text-red-500"}>{langs[localStorage.getItem('language')]?.file.invalidExt} ({["png", "jpg", "jfif", "gif", "webp"].join(', ')})</small>
                 </div>
                 <div className={'flex w-full mt-2'}>
-                    <button onClick={() => this.props.setParentState({profilePicEnabled:false})} className={'text-blue-500 underline'}>Close</button>
+                    <button onClick={() => this.props.setParentState({profilePicEnabled:false})} className={'text-blue-500 underline'}>{langs[localStorage.getItem('language')]?.file.closeCode}</button>
                     <div className={'flex-grow'}></div>
-                    <button onClick={this.updatePP.bind(this)} className={'bg-green-500 font-semibold text-white rounded py-1 px-2'}>Apply</button>
+                    <button onClick={this.updatePP.bind(this)} className={'bg-green-500 font-semibold text-white rounded py-1 px-2'}>{langs[localStorage.getItem('language')]?.file.apply}</button>
                 </div>
             </div>
         )

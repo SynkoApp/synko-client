@@ -1,5 +1,5 @@
 {
-  "name": "synko-beta",
+  "name": "synko",
   "homepage": "./",
   "author": "Kunah & GenoWeb",
   "description": "synko client",
@@ -7,7 +7,10 @@
   "version": "1.0.0",
   "private": true,
   "dependencies": {
-    "@craco/craco": "^6.1.2",
+    "@testing-library/jest-dom": "^5.16.1",
+    "@testing-library/react": "^12.1.2",
+    "@testing-library/user-event": "^13.5.0",
+    "ace-builds": "^1.4.13",
     "animate.css": "^4.1.1",
     "axios": "^0.21.1",
     "concurrently": "^6.2.0",
@@ -26,26 +29,27 @@
     "node-emoji": "^1.11.0",
     "path": "^0.12.7",
     "react": "^17.0.2",
+    "react-ace": "^9.5.0",
     "react-contenteditable": "^3.3.6",
     "react-dom": "^17.0.2",
-    "react-icons": "^4.2.0",
+    "react-icons": "^4.3.1",
     "react-player": "^2.9.0",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.3",
+    "react-scripts": "5.0.0-next.58",
     "react-slick": "^0.28.1",
     "react-tooltip": "^4.2.21",
     "styled-components": "^5.3.0",
     "wait-on": "^6.0.0",
-    "web-vitals": "^1.0.1",
+    "web-vitals": "^2.1.2",
     "websocket": "^1.0.34",
     "xss-filters": "^1.2.7"
   },
   "scripts": {
     "dev": "concurrently \"npm start\" \"wait-on http://localhost:3000 && electron .\"",
-    "start": "craco start",
-    "build": "craco build",
+    "start": "react-scripts start",
+    "build": "react-scripts build",
     "electron-build": "npm run build && electron-builder build --win --publish always",
-    "test": "craco test",
+    "test": "react-scripts test",
     "eject": "react-scripts eject",
     "ebuild": "npm run build && node_modules/.bin/build"
   },
@@ -68,16 +72,16 @@
     ]
   },
   "devDependencies": {
-    "autoprefixer": "^9.8.6",
+    "autoprefixer": "^10.4.0",
     "electron": "^13.1.5",
     "electron-builder": "^22.11.7",
-    "postcss": "^7.0.35",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.1.4"
+    "postcss": "^8.4.4",
+    "tailwindcss": "^3.0.0"
   },
   "build": {
     "appId": "com.synko.app",
     "productName": "Synko Client",
-    "artifactName": "${productName}.${ext}",
+    "artifactName": "synko_client.${ext}",
     "electronUpdaterCompatibility": ">= 2.16",
     "files": [
       "build/**/*",
@@ -96,7 +100,7 @@
       "icon": "public/icon.ico",
       "publish": {
         "provider": "generic",
-        "url": "http://localhost:4060/files/"
+        "url": "https://api.synko.kunah.fr/files/"
       }
     }
   }
