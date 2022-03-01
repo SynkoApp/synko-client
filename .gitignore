@@ -3,6 +3,3 @@
 /client/build/**/**
 /client/dist/**/**
 /files
-
-package-lock.json
-/client/package-lock.json
