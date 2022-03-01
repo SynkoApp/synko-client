@@ -51,7 +51,7 @@ autoUpdater.on('error', (err) => {
 autoUpdater.on('update-downloaded', (info) => {
     sendMessage('updated', `Update ${info.version} is downloaded ! App will restart in 5 seconds.`);
     setTimeout(() => {
-        autoUpdater.quitAndInstall();
+        autoUpdater.quitAndInstall(true, true);
     }, 5000);
 });
  
