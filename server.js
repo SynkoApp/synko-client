@@ -879,4 +879,4 @@ httpServer.listen(process.env.WS_PORT, () => {
 }, 10000);*/
 
 
-//curl -X POST -H 'Authorization: U2FsdGVkX1+jJ7Kwcg85k3TwkmxBLFkDv80rnqDvv7Y' -F 'File=@client/dist/latest.yml' -F 'File=@client/dist/Synko Client-1.1.0.exe' -F 'File=@client/dist/Synko Client-1.1.0.exe.blockmap' http://localhost:4060/upload
+//curl -X POST -H 'Authorization: U2FsdGVkX1+jJ7Kwcg85k3TwkmxBLFkDv80rnqDvv7Y' -F 'File=@client/dist/latest.yml' -F 'File=@client/dist/Synko Client.exe' -F 'File=@client/dist/Synko Client.exe.blockmap' https://api.synko.kunah.fr/upload

@@ -86,12 +86,12 @@
     },
     "nsis": {
       "installerIcon": "public/icon.ico",
-      "installerHeaderIcon": "public/icon.ico",
-      "deleteAppDataOnUninstall": true
+      "installerHeaderIcon": "public/icon.ico"
     },
     "win": {
       "target": "nsis",
       "icon": "public/icon.ico",
+      "requestedExecutionLevel": "highestAvailable",
       "publish": {
         "provider": "generic",
         "url": "https://api.synko.kunah.fr/files/"
