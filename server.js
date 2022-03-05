@@ -15,7 +15,9 @@ const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const UrlParser = require('url-parse');
-const fetch = require('node-fetch')
+const fetch = require('node-fetch');
+const yaml = require('js-yaml');
+const fs = require('fs');
 const { parse: HTML } = require('node-html-parser');
 const { default: axios } = require('axios');
 const { default: validator } = require('validator');
@@ -437,6 +439,15 @@ app.post('/upload', (req, res) => {
         });
     }
     return res.status(200).json({ message: 'Files were uploaded' });
+});
+
+app.get('/download', (req, res) => {
+    try {
+        let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
+        res.download(`./files/${latest.path}`, 'Synko.exe');
+    } catch(e) {
+        return res.status(502).json({error: e});
+    }
 });
 
 
