@@ -5,7 +5,7 @@
   "author": "Kunah & GenoWeb",
   "description": "Synko Client is a real-time chat made by Kunah & GenoWeb",
   "main": "./public/electron.js",
-  "version": "1.0.4",
+  "version": "1.0.7",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
@@ -18,7 +18,7 @@
     "electron-is-dev": "^2.0.0",
     "electron-log": "^4.4.1",
     "electron-store": "^8.0.0",
-    "electron-updater": "^4.3.9",
+    "electron-updater": "^5.0.0",
     "emoji-picker-react": "^3.4.8",
     "emoji-unicode": "^2.0.1",
     "html-react-parser": "^1.4.0",
@@ -69,14 +69,14 @@
   "devDependencies": {
     "autoprefixer": "^10.4.0",
     "electron": "^13.1.5",
-    "electron-builder": "^22.11.7",
+    "electron-builder": "^22.14.13",
     "postcss": "^8.4.4",
     "tailwindcss": "^3.0.0"
   },
   "build": {
     "appId": "com.synko.app",
-    "productName": "Synko Client",
-    "artifactName": "Synko Client.${ext}",
+    "productName": "Synko",
+    "artifactName": "Synko ${version}.${ext}",
     "electronUpdaterCompatibility": ">= 2.16",
     "files": [
       "build/**/*",

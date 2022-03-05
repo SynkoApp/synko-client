@@ -25,7 +25,7 @@ export default class Notifications extends React.Component {
 
     render (){
         return (
-            <div className={'fixed top-10 right-5 transition-all'} id="notifications">
+            <div className={'fixed top-10 right-5 transition-all z-50'} id="notifications">
             </div>
         )
     }

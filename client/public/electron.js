@@ -45,13 +45,13 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 
 autoUpdater.on('error', (err) => {
-    sendMessage('Error in auto-updater. ' + err);
+    log.error('Error in auto-updater. ' + err);
 })
 
 autoUpdater.on('update-downloaded', (info) => {
-    sendMessage('updated', `Update ${info.version} is downloaded ! App will restart in 5 seconds.`);
+    sendMessage('notification', `Update ${info.version} is downloaded ! App will restart in 5 seconds.`);
     setTimeout(() => {
-        autoUpdater.quitAndInstall(true, true);
+        autoUpdater.quitAndInstall();
     }, 5000);
 });
  
@@ -64,7 +64,7 @@ function createWindow() {
         show: false,
         resizable: true,
         frame: false,
-        title: "Synko Client v2",
+        title: "Synko Client",
         darkTheme: true,
         webPreferences: {
             devTools: isDev,
