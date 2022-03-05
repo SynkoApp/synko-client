@@ -103,7 +103,7 @@ export default class NewGroup extends React.Component {
                 <div className={'flex-grow mt-2 w-full'}>
                     {this.state.users?.map(user =>
                         <div className={'hover:bg-gray-700 text-md font-semibold hover:text-gray-300 text-gray-400 flex cursor-default items-center justify-between w-full rounded p-2'} key={user.id}>
-                        <div>
+                        <div className='flex items-center'>
                             <img className={"w-8 h-8 rounded-full mr-2"} src={user.profilePic} alt={"Avatar de "+user.username}/>
                             <h2>{user.username}</h2>
                         </div>
