@@ -37,13 +37,6 @@ autoUpdater.on('not-update-available', (info) => {
     sendMessage('notification', `There's no update available.`);
 });
 
-autoUpdater.on('download-progress', (progressObj) => {
-    let log_message = "Download speed: " + fBytes(progressObj.bytesPerSecond).size+" "+fBytes(progressObj.bytesPerSecond).unit + "/s";
-    log_message = log_message + ' - Downloaded ' + progressObj.percent + '%';
-    log_message = log_message + ' (' + fBytes(progressObj.transferred).size + "/" + fBytes(progressObj.total).size + " " + fBytes(progressObj.total).unit + ')';
-    sendMessage('notification', log_message);
-})
-
 autoUpdater.on('error', (err) => {
     log.error('Error in auto-updater. ' + err);
 })
