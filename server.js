@@ -251,7 +251,9 @@ app.get('/proxy/:type', (req, res) => {
                 let canonical = $.querySelector('link[rel=canonical]');
                 if (canonical) meta.url = canonical.getAttribute('href');
                 meta.domain = UrlParser(req.query.url).hostname;
-                meta.icon = $.querySelector('link[rel=icon]').getAttribute('href') || $.querySelector('link[rel=shortcut icon]').getAttribute('href') || null;
+                let icon = $.querySelector('link[rel=icon]') || $.querySelector('link[rel="shortcut icon"]');
+                if(icon) meta.icon = icon.getAttribute('href');
+                else meta.icon = icon;
                 let metas = $.querySelectorAll('head meta');
                 for(let i = 0; i < metas.length; i++) {
                     let el = metas[i];
@@ -270,10 +272,22 @@ app.get('/proxy/:type', (req, res) => {
                 };
                 return res.json({meta, og});
             }).catch(err => {
-                res.json({
-                    error: "Not found",
-                    content: err.message
-                });
+                if(err.request._isRedirect) {
+                    res.status(410).json({
+                        error: "Bad redirect",
+                        content: `${err.code}: ${err.syscall} from ${err.hostname}`
+                    });
+                } else if(err.response?.status == 404) {
+                    res.status(404).json({
+                        error: "Not found",
+                        content: err.message
+                    });                    
+                } else {
+                    res.status(502).json({
+                        error: "Internal server error",
+                        content: err.message
+                    });
+                }
             });
             break;
         default:
@@ -301,7 +315,7 @@ app.get('/getMessages/:gid', async (req, res) => {
                 for (let j = 0; j < links.length; j++) {
                     messages[i].links = []
                     let url = links[j];
-                    const response = await fetch(`https://api.synko.kunah.fr/m?url=${encodeURIComponent(url)}`);
+                    const response = await fetch(`https://api.synko.kunah.fr/proxy/m?url=${encodeURIComponent(url)}`);
                     const data = await response.json();
                     if(data.error) return;
                     Object.assign(data.meta, data.og);
