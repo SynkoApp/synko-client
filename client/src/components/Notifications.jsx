@@ -29,9 +29,7 @@ export default class Notifications extends React.Component {
 
     render (){
         return (
-            <div className={'fixed top-10 right-5 transition-all z-50'} id="notifications">
-                <div class="animate__animated animate__backInRight px-5 py-2 bg-blue-500 bg-opacity-50 rounded text-gray-200 font-semibold shadow-md mb-4" id={this.state.id}>{this.state.downloading}</div>
-            </div>
+            <div className={'fixed top-10 right-5 transition-all z-50'} id="notifications"></div>
         )
     }
 }
