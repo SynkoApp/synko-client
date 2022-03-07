@@ -301,7 +301,7 @@ app.get('/getMessages/:gid', async (req, res) => {
                 for (let j = 0; j < links.length; j++) {
                     messages[i].links = []
                     let url = links[j];
-                    const response = await fetch(`http://localhost:4060/proxy/m?url=${encodeURIComponent(url)}`);
+                    const response = await fetch(`https://api.synko.kunah.fr/m?url=${encodeURIComponent(url)}`);
                     const data = await response.json();
                     if(data.error) return;
                     Object.assign(data.meta, data.og);
@@ -624,7 +624,7 @@ app.get('/download', (req, res) => {
 \------------------------------------------*/
 
 app.get('*', function(req, res) {
-    res.redirect('https://synko.kunah.xyz')
+    res.redirect('https://synko.kunah.fr')
 })
 
 // Server starting
@@ -734,7 +734,7 @@ function getAllValidesUrls(string) {
         if(link) {
             urls.push(url);
         }
-    })
+    });
     return urls;
 }
 
@@ -800,9 +800,10 @@ wsServer.on('request', function(request) {
                         newMessage.links = [];
                         for (let i = 0; i < links.length; i++) {
                             let url = links[i];
-                            const response = await fetch(`http://localhost:4060/proxy/m?url=${encodeURIComponent(url)}`);
+                            console.log(url)
+                            const response = await fetch(`https://api.synko.kunah.fr/proxy/m?url=${encodeURIComponent(url)}`);
                             const data = await response.json();
-                            if(data.error) return;
+                            if(data.error) return console.log(data.error);
                             Object.assign(data.meta, data.og);
                             data.meta.site = url
                             newMessage.links.push(data.meta)

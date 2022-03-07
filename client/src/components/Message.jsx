@@ -62,6 +62,7 @@ export default class Message extends React.Component {
             pad = this.isContainPad(this.props.children);
         }
         let links = this.props.message.links;
+        console.log(this.props.message)
         return (
             <div id={'msg-'+this.props.message.id} className={'group w-full flex bg-gray-700 hover:bg-gray-650 mb-2 p-2 pl-4 items-start relative z-0 hover:z-10'}>
                 <img alt={`${this.props.author?.username}'s profile avatar`} className={'rounded-full w-10 h-10 mr-2 cursor-pointer'} src={API_URL+'/proxy/i?url='+this.props.author?.profilePic}/>
