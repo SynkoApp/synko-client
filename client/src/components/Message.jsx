@@ -50,7 +50,7 @@ export default class Message extends React.Component {
     render (){
         let attachments = [];
         if(this.props.message.attachments) {
-            for (let i = 0; i < this.props.message.attachments.length; i++) {
+            for (let i = 0; i < this.props.message.attachments; i++) {
                 attachments.push(i+1);
             }            
         }
@@ -62,7 +62,7 @@ export default class Message extends React.Component {
             pad = this.isContainPad(this.props.children);
         }
         let links = this.props.message.links;
-        console.log(this.props.message)
+        console.log(attachments)
         return (
             <div id={'msg-'+this.props.message.id} className={'group w-full flex bg-gray-700 hover:bg-gray-650 mb-2 p-2 pl-4 items-start relative z-0 hover:z-10'}>
                 <img alt={`${this.props.author?.username}'s profile avatar`} className={'rounded-full w-10 h-10 mr-2 cursor-pointer'} src={API_URL+'/proxy/i?url='+this.props.author?.profilePic}/>
