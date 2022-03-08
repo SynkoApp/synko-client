@@ -315,7 +315,7 @@ app.get('/getMessages/:gid', async (req, res) => {
                 for (let j = 0; j < links.length; j++) {
                     messages[i].links = []
                     let url = links[j];
-                    const response = await fetch(`https://api.synko.kunah.fr/proxy/m?url=${encodeURIComponent(url)}`);
+                    const response = await fetch(`http://localhost:4060/proxy/m?url=${encodeURIComponent(url)}`); //https://api.synko.kunah.fr/proxy
                     const data = await response.json();
                     if(data.error) return;
                     Object.assign(data.meta, data.og);
