@@ -12,6 +12,25 @@ autoUpdater.logger.transports.file.level = 'info';
 let mainWindow;
 let Tray;
 
+let deeplinkingUrl;
+
+const gotTheLock = app.requestSingleInstanceLock()
+if (gotTheLock) {
+    app.on('second-instance', (e, argv) => {
+        if (process.platform == 'win32') {
+            deeplinkingUrl = argv.slice(1)
+        }
+
+        if (mainWindow) {
+            if (mainWindow.isMinimized()) mainWindow.restore()
+            mainWindow.focus()
+        }
+    })
+} else {
+    app.quit()
+    return
+}
+
 const schema = {
     launchAtStart: true,
     bounds: {
@@ -125,3 +144,7 @@ app.on('ready', () => {
         });
     }
 });
+
+if (!app.isDefaultProtocolClient('synko')) {
+    app.setAsDefaultProtocolClient('synko')
+}
