@@ -51,7 +51,8 @@ export default class Dm extends React.Component {
             });
             this.setState({ messages: req.data.messages, users: req.data.users });
             setTimeout(() => {
-                this.updateScroll();
+                let element = $("#messages-box");
+                element.scrollTop(element.prop('scrollHeight'));
             });
         } catch(err) {
             return this.setState({
@@ -67,7 +68,6 @@ export default class Dm extends React.Component {
             let tknValidation = await checkToken(localStorage.getItem('token'), localStorage.getItem('username'))
             if(tknValidation.status === 200){
                 this.connect();
-                this.updateScroll();
                 return this.getMessages();
             }
         }
