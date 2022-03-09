@@ -159,7 +159,7 @@ app.patch('/users/@me', (req, res) => {
             } else return res.status(401).json({message: "Wrong credentials", code: 'UNAUTHORIZED'});
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
     } else return res.status(401).json({message: "Unauthorized", code: 'UNAUTHORIZED'});
-})
+});
 
 app.post('/createGroup', (req, res) => {
     let { body } = req;
@@ -197,7 +197,7 @@ app.post('/createGroup', (req, res) => {
         groups.set(`${group.id}`, group)
         res.status(200).json({message : "GROUP_CREATED", group_id : group.id})
     }
-})
+});
 
 app.get('/getGroups', (req, res) => {
     if(req.headers.authorization){
@@ -327,11 +327,16 @@ app.get('/getMessages/:gid', async (req, res) => {
         let participants = groups.get(`${user_group}.participants`);
         participants.forEach(p => {
             let user = users.get(`${p.id}`)
+            let badges = [];
+            if(user.permissions == 1) {
+                badges.push("admin");
+            }
             users_group.push({
                 username: user.username || "Deleted_User",
                 profilePic: user.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
                 id: p.id,
-                group_permission: p.permissions
+                group_permission: p.permissions,
+                badges
             });
         });
         res.json({

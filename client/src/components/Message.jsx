@@ -9,6 +9,8 @@ import emojifier from '../utils/emojifier';
 import UrlParser from 'js-video-url-parser';
 import Player from './Player';
 import { HiDotsHorizontal } from 'react-icons/hi';
+import { BiCheckShield } from 'react-icons/bi'
+import { FaCrown } from 'react-icons/fa'
 import { clipboard } from '../utils/electron';
 import { API_URL } from '../utils/APIBase';
 import Embed from './Embed'
@@ -22,6 +24,9 @@ export default class Message extends React.Component {
             links: []
         }
         this.links = []
+        this.icons = {
+            admin: <BiCheckShield className='ml-2 text-blue-500' key={Math.random()*Date.now()}/>
+        }
     }
 
     isOnlyEmojis(string) {
@@ -62,12 +67,11 @@ export default class Message extends React.Component {
             pad = this.isContainPad(this.props.children);
         }
         let links = this.props.message.links;
-        console.log(attachments)
         return (
             <div id={'msg-'+this.props.message.id} className={'group w-full flex bg-gray-700 hover:bg-gray-650 mb-2 p-2 pl-4 items-start relative z-0 hover:z-10'}>
                 <img alt={`${this.props.author?.username}'s profile avatar`} className={'rounded-full w-10 h-10 mr-2 cursor-pointer'} src={API_URL+'/proxy/i?url='+this.props.author?.profilePic}/>
                 <div className={'flex flex-col w-full'}>
-                    <h2 className={'text-blue-500 font-medium'}><span className='hover:underline cursor-pointer'>{this.props.author?.username}</span><span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
+                    <h2 className={'text-blue-500 font-medium flex items-end'}><span className='hover:underline cursor-pointer flex items-center'>{this.props.author?.username}{this.props.isOwner ? <FaCrown className='ml-2 text-yellow-500' /> : ""}{this.props.author?.badges.map(b => this.icons[b])}</span><span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
                     <Linkify className={'text-gray-300 flex-grow break-all pr-10'+(this.isOnlyEmojis(emojify(this.props.children))?" text-2xl":"")} tagName="p" options={{className:"text-blue-400 hover:underline", rel: 'noreferrer', truncate: 32, target: "_blank", nl2br: true, format: {
                         url: (value) => value.length > 32 ? value.slice(0, 32) + '…' : value
                     }}}>{parse(emojifier(xssFilter.inHTMLData(this.props.children)/*.replace(/\n/g, '<br>').replace(/\s/g, '&nbsp;')*/, this.isOnlyEmojis(emojify(this.props.children))))}</Linkify>
@@ -94,3 +98,10 @@ export default class Message extends React.Component {
         )
     }
 }
+
+//BiCheckShield
+
+
+
+//U2FsdGVkX18HkjQoDNK7qfAsUrZ7K4J7Zx5hwrYBBUw=
+//1451150422

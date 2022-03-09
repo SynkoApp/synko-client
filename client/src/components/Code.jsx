@@ -43,7 +43,7 @@ export default class Code extends React.Component {
             <div id={'msg-'+this.props.message.id} className={'group w-full flex bg-gray-700 hover:bg-gray-650 mb-2 p-2 pl-4 items-start relative z-0 hover:z-10'}>
                 <img alt={`${this.props.author?.username}'s profile avatar`} className={'rounded-full w-10 h-10 mr-2 cursor-pointer'} src={API_URL+'/proxy/i?url='+this.props.author?.profilePic}/>
                 <div className={'flex flex-col w-full'}>
-                    <h2 className={'text-blue-500 font-medium'}>{this.props.author?.username} <span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
+                    <h2 className={'text-blue-500 font-medium'}>{this.props.author?.username} {this.props.isOwner ? "badge" : ""}<span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
                     {this.parseCode(this.props.children)}
                 </div>
                 <div className={'w-8 flex justify-right flex-grow right-0 float-right top-2 z-50 sticky'}>
