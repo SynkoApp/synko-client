@@ -464,6 +464,15 @@ app.get('/download', (req, res) => {
     }
 });
 
+app.get('/latest', (req, res) => {
+    try {
+        let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
+        res.json(latest);
+    } catch(e) {
+        return res.status(502).json({error: e});
+    }
+});
+
 
 /*------------------------------------------\
 |-----------------ADMIN API-----------------|
