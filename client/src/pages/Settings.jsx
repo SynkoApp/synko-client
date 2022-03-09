@@ -5,8 +5,10 @@ import {API_URL, WS_URL} from '../utils/APIBase';
 import LeftMenu from '../components/LeftMenu'
 import { MdModeEdit } from 'react-icons/md';
 import { CgClose } from 'react-icons/cg'
-import { checkToken } from '../utils/functions';
+import { checkToken, checkUpdate } from '../utils/functions';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import pkg from "../../package.json";
+import { ipcRenderer } from '../utils/electron';
 let langs = require('../languages/lang.config').default;
 
 export default class Settings extends React.Component {
@@ -73,6 +75,7 @@ export default class Settings extends React.Component {
                     <div className={'flex-grow flex-col flex items-start h-full p-2'}>
                         <Profile setParentState={this.setParentState.bind(this)} key={Date.now()}/> 
                         <Languages setParentState={this.setParentState.bind(this)}/>
+                        <Update/>
                     </div>
                     <ProfilePicModal open={this.state.profilePicEnabled?"block":"hidden"} setParentState={this.setParentState.bind(this)}/>
                 </div>
@@ -262,6 +265,42 @@ class Languages extends React.Component {
                         })
                     }
                 </select>
+            </div>
+        )
+    }
+}
+
+class Update extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            updateAvailable: false
+        }
+    }
+
+    async componentDidMount() {
+        this.checkUpdate();
+    }
+
+    async checkUpdate() {
+        let update = await checkUpdate();
+        this.setState({
+            updateAvailable: update
+        });
+    }
+
+    update() {
+        ipcRenderer.send('update-request');
+    }
+
+    render() {
+        return (
+            <div className={'w-full mt-2 h-32 flex-col rounded text-gray-300 bg-gray-650 flex items-start p-5'}>
+                <h2 className={"text-gray-200 font-semibold"}>{langs[localStorage.getItem('language')]?.file.update.checkupdate}</h2>
+                {this.state.updateAvailable ?
+                    <button onClick={this.update} className="bg-green-500 px-5 py-2 mt-3 text-white rounded hover:bg-emerald-600">{langs[localStorage.getItem('language')]?.file.update.outofdate} (v{this.state.updateAvailable.version})</button>    
+                :
+                    <button className="px-5 py-2 mt-3 text-white rounded border-2 opacity-50 cursor-not-allowed">{langs[localStorage.getItem('language')]?.file.update.uptodate} (v{pkg.version})</button>}
             </div>
         )
     }

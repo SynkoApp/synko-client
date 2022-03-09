@@ -1,7 +1,8 @@
 import React from "react";
 import {
     getCurrentWindow,
-    getCurrentVersion
+    getCurrentVersion,
+    getName
 } from '../utils/electron';
 
 import { IoClose, IoRemove, IoCopyOutline, IoSquareOutline } from 'react-icons/io5'
@@ -68,7 +69,7 @@ export default class Topbar extends React.Component {
             <>
                 {window.require("electron") ? 
                 <div className={'flex bg-gray-800 h-6 justify-between align-center'} style={{WebkitAppRegion: 'drag', WebkitUserSelect: 'none'}}>
-                    <h1 className={'text-white ml-2 font-semibold'}>Synko v{getCurrentVersion()}</h1>
+                    <h1 className={'text-white ml-2 font-semibold'}>{getName()} v{getCurrentVersion()}</h1>
                     <ul className={'flex p-0'}>
                         <li className={'flex items-center h-full px-4 text-white text-md hover:bg-gray-750 cursor-pointer bg-opacity-50'} style={{WebkitAppRegion: 'no-drag'}} onClick={this.minimizeWindow.bind(this)}><IoRemove/></li>
                         <li className={'flex items-center h-full px-4 text-white text-sm hover:bg-gray-750 cursor-pointer bg-opacity-50'} style={{WebkitAppRegion: 'no-drag'}} onClick={this.maxUnmaxWindow.bind(this)}>{this.isWindowMaximized() ? <IoCopyOutline/> : <IoSquareOutline/>}</li>

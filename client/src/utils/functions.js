@@ -16,7 +16,31 @@ export async function checkToken(token, username) {
         return await err
       }
     } else return false
+}
 
+export async function checkUpdate() {
+    let { version } = require('../../package.json');
+    let {API_URL} = require('./APIBase')
+    let axios = require('axios');
+    try {
+        let res = await axios({
+          method: 'get',
+          url: `${API_URL}/latest`
+        });
+        let { data, status } = res;
+        if(status == 200) {
+          if(data?.version > version) {
+            return data;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+        //return await res;
+    } catch (err) {
+      return await err;
+    }
 }
 
 export function retrieveImageFromDataToBase64(item){

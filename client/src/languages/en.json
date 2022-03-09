@@ -75,5 +75,10 @@
         "symbols": "Symbols",
         "flags": "Flags",
         "recently_used": "Recently used"
+    },
+    "update": {
+        "uptodate": "The software is up to date!",
+        "outofdate": "An update is available!",
+        "checkupdate": "Check for an update"
     }
 }

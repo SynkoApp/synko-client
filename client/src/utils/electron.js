@@ -9,10 +9,15 @@ function getCurrentVersion() {
     return remote.app.getVersion();
 }
 
+function getName() {
+    return remote.app.getName();
+}
+
 export {
     getCurrentWindow,
     getCurrentVersion,
     ipcRenderer,
     shell,
-    clipboard
+    clipboard,
+    getName
 };

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, globalShortcut, dialog, shell } = require('electron');
+const { app, BrowserWindow, globalShortcut, dialog, shell, ipcMain } = require('electron');
 const isDev = require('electron-is-dev');   
 const path = require('path');
 const Store = require('electron-store');
@@ -83,7 +83,7 @@ function createWindow() {
         show: false,
         resizable: true,
         frame: false,
-        title: "Synko Client",
+        title: "Synko",
         darkTheme: true,
         webPreferences: {
             devTools: isDev,
@@ -95,6 +95,8 @@ function createWindow() {
         icon: `${path.join(__dirname, '/icon.ico')}`
     });
     const startURL = isDev ? 'http://localhost:3000' : `file://${path.join(__dirname, '../build/index.html')}`;
+
+    app.setName(isDev ? "Synko Dev" : "Synko");
  
     mainWindow.loadURL(startURL);
 
@@ -116,6 +118,11 @@ function createWindow() {
         });
     });
 }
+
+ipcMain.on('update-request', () => {
+    autoUpdater.checkForUpdates();
+    console.log("cc")
+});
 
 function sendMessage(type, message) {
     mainWindow.webContents.send(type, message);

@@ -75,5 +75,10 @@
         "symbols": "Symboles",
         "flags": "Drapeaux",
         "recently_used": "Utilisés récemment"
+    },
+    "update": {
+        "uptodate": "Le logiciel est à jour !",
+        "outofdate": "Une mise à jour est disponible !",
+        "checkupdate": "Vérifier une mise à jour"
     }
 }
