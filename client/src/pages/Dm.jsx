@@ -98,11 +98,12 @@ export default class Dm extends React.Component {
 
     sendMessage(e){
         e.preventDefault()
-        if(this.counter > 5) return
+        if(document.querySelector('#msgSender').innerText.trim().length > 500) return;
+        if(this.counter > 5) return;
         this.counter += 1
         setTimeout(() => {
             this.counter -= 1
-        }, 10000)
+        }, 10000);
         let msg = document.querySelector('#msgSender').innerText.trim();
         if(msg == "" && this.state.attachments.files.length < 1) return;
         if(msg == "" && document.querySelector('#imgInputModal')) {

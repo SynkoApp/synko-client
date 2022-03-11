@@ -326,16 +326,17 @@ app.get('/getMessages/:gid', async (req, res) => {
         }
         let participants = groups.get(`${user_group}.participants`);
         participants.forEach(p => {
-            let user = users.get(`${p.id}`)
-            let badges = [];
-            if(user?.permissions == 1) {
+            let user = users.get(`${p.id}`);
+            console.log(user.badges)
+            let badges = user.badges || [];
+            if(user.permissions == 1) {
                 badges.push("admin");
             }
             users_group.push({
-                username: user?.username || "Deleted_User",
-                profilePic: user?.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
+                username: user.username || "Deleted_User",
+                profilePic: user.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
                 id: p.id,
-                group_permission: p?.permissions,
+                group_permission: p.permissions || 0,
                 badges
             });
         });
@@ -502,6 +503,7 @@ app.get('/latest', (req, res) => {
                     profile_pic : data.profilePic,
                     groups : data.groups,
                     perms : data.permissions,
+                    badges: data.badges || []
                 })
             });
             return res.status(200).json({users : usersArr})
@@ -540,8 +542,9 @@ app.get('/latest', (req, res) => {
             let id = tokenToID(req.headers.authorization)
             if(!isAdmin(id)) return res.status(401).json({message: "User or invalid token"});
             if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
+            console.log(req.body.user)
             Object.keys(req.body.user).forEach(prop => {
-                users.set(`${req.params.id}.${prop}`, `${req.body.user[prop]}`);
+                users.set(`${req.params.id}.${prop}`, req.body.user[prop]);
             });
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
@@ -896,7 +899,6 @@ wsServer.on('request', function(request) {
                 /*webSockets.get(socketData.group).forEach(c => {
                     c.send(JSON.stringify({type:"deleted_group", id:socketData.group}));
                 });*/
-                console.log(socketData.group)
                 onlineUsers.forEach(u => {
                     if(participants.find(usr => usr.id == u.uid)) {
                         u.ws.send(JSON.stringify({
