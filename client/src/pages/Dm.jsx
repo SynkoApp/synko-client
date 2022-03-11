@@ -24,6 +24,7 @@ let lang = require('../languages/lang.config').default[localStorage.getItem('lan
 export default class Dm extends React.Component {
     constructor(props){
         super(props)
+        this.counter = 0;
         this.state = {
             messages: [],
             users: [],
@@ -97,6 +98,11 @@ export default class Dm extends React.Component {
 
     sendMessage(e){
         e.preventDefault()
+        if(this.counter > 5) return
+        this.counter += 1
+        setTimeout(() => {
+            this.counter -= 1
+        }, 10000)
         let msg = document.querySelector('#msgSender').innerText.trim();
         if(msg == "" && this.state.attachments.files.length < 1) return;
         if(msg == "" && document.querySelector('#imgInputModal')) {
@@ -154,9 +160,10 @@ export default class Dm extends React.Component {
             if(data.type == "new_message"){
                 setTimeout(() => {
                     let user = this.state.users.find(u => u.id == data.author);
+                    console.log(user)
                     if(data.content.startsWith('\`\`\`') && data.content.endsWith('\`\`\`')){
                         this.setState({messages : [...this.state.messages, data]})
-                    } else $("#messages-box").append(renderToString(<Message deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
+                    } else $("#messages-box").append(renderToString(<Message deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} isOwner={user.group_permission == 1?true:false} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
                     $(`#msg-${data.id} > div:last-of-type > ul li`).each((i, elem) => {
                         $(elem.children[0]).on('click', () => {
                             if($(elem).hasClass("cpy-btn")) {
@@ -364,7 +371,6 @@ export default class Dm extends React.Component {
                         </div>
                         <div id="sender-ctn" className={'absolute w-full left-0 bottom-10 px-4'} >
                             <ContentEditable
-                             
                                 html={""}
                                 data-placeholder={lang.dm.sendMessage+'...'}
                                 id="msgSender"

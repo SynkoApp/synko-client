@@ -328,14 +328,14 @@ app.get('/getMessages/:gid', async (req, res) => {
         participants.forEach(p => {
             let user = users.get(`${p.id}`)
             let badges = [];
-            if(user.permissions == 1) {
+            if(user?.permissions == 1) {
                 badges.push("admin");
             }
             users_group.push({
-                username: user.username || "Deleted_User",
-                profilePic: user.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
+                username: user?.username || "Deleted_User",
+                profilePic: user?.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
                 id: p.id,
-                group_permission: p.permissions,
+                group_permission: p?.permissions,
                 badges
             });
         });
@@ -885,9 +885,12 @@ wsServer.on('request', function(request) {
                 let participants = [];
                 groups.get(`${socketData.group}`).participants.forEach(p => {
                     participants.push(p);
-                    let user_groups = users.get(`${p.id}.groups`);
-                    user_groups.splice(users.get(`${p.id}.groups`).indexOf(socketData.group), 1);
-                    users.set(`${p.id}.groups`, user_groups);
+                    if(users.has(`${p.id}`)) {
+                        let user_groups = users.get(`${p.id}.groups`);
+                        user_groups?.splice(users.get(`${p.id}.groups`).indexOf(socketData.group), 1);
+                        users.set(`${p.id}.groups`, user_groups);                        
+                    }
+
                 });
                 groups.delete(`${socketData.group}`);
                 /*webSockets.get(socketData.group).forEach(c => {

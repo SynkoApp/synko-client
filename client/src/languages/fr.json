@@ -28,7 +28,8 @@
         "register_link": "Créer un compte",
         "login_btn": "Se connecter",
         "login_link": "Déjà inscrit",
-        "register_btn": "S'inscrire"
+        "register_btn": "S'inscrire",
+        "logout": "Se déconnecter"
     },
     "group" : {
         "name" : "Nom",

@@ -76,6 +76,7 @@ export default class Settings extends React.Component {
                         <Profile setParentState={this.setParentState.bind(this)} key={Date.now()}/> 
                         <Languages setParentState={this.setParentState.bind(this)}/>
                         <Update/>
+                        <Logout/>
                     </div>
                     <ProfilePicModal open={this.state.profilePicEnabled?"block":"hidden"} setParentState={this.setParentState.bind(this)}/>
                 </div>
@@ -301,6 +302,32 @@ class Update extends React.Component {
                     <button onClick={this.update} className="bg-green-500 px-5 py-2 mt-3 text-white rounded hover:bg-emerald-600">{langs[localStorage.getItem('language')]?.file.update.outofdate} (v{this.state.updateAvailable.version})</button>    
                 :
                     <button className="px-5 py-2 mt-3 text-white rounded border-2 opacity-50 cursor-not-allowed">{langs[localStorage.getItem('language')]?.file.update.uptodate} (v{pkg.version})</button>}
+            </div>
+        )
+    }
+}
+
+class Logout extends React.Component {
+    constructor(props) {
+        super(props)
+        this.state = {}
+    }
+
+    logout(){
+        localStorage.removeItem('token')
+        localStorage.removeItem('username')
+        localStorage.removeItem('id')
+        this.setState({redirect: "login"})
+    }
+
+    render() {
+        if(this.state.redirect){
+            return <Redirect to={this.state.redirect}/>
+        }
+        return (
+            <div className={'w-full mt-2 h-32 flex-col rounded text-gray-300 bg-gray-650 flex items-start p-5'}>
+                <h2 className={"text-gray-200 font-semibold"}>{langs[localStorage.getItem('language')]?.file.login.logout}</h2>
+                <button onClick={this.logout.bind(this)} className="bg-red-500 px-5 py-2 mt-3 text-white rounded hover:bg-red-600">{langs[localStorage.getItem('language')]?.file.login.logout}</button>    
             </div>
         )
     }
