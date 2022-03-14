@@ -47,11 +47,12 @@ const transporter = nodemailer.createTransport({
 
 /* groups.all().forEach(e => {
     groups.delete(`${e.ID}`)
-}) 
-
-users.all().forEach(e => {
-    users.set(`${e.ID}.groups`, []);
 }) */
+
+/*users.all().forEach(e => {
+    users.set(`${e.ID}.badges`, []);
+})*/
+
 function isDigit(digit){return/\d{6}/.test(digit);}
 if(users.has('undefined')) users.delete('undefined');
 
@@ -327,14 +328,14 @@ app.get('/getMessages/:gid', async (req, res) => {
         let participants = groups.get(`${user_group}.participants`);
         participants.forEach(p => {
             let user = users.get(`${p.id}`);
-            console.log(user.badges)
-            let badges = user.badges || [];
-            if(user.permissions == 1) {
+            let badges = user?.badges || [];
+            if(typeof badges == "string") badges = badges.split(',');
+            if(user?.permissions == 1) {
                 badges.push("admin");
             }
             users_group.push({
-                username: user.username || "Deleted_User",
-                profilePic: user.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
+                username: user?.username || "Deleted_User",
+                profilePic: user?.profilePic || "https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png",
                 id: p.id,
                 group_permission: p.permissions || 0,
                 badges
