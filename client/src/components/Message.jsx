@@ -25,8 +25,8 @@ export default class Message extends React.Component {
         this.links = []
         this.icons = {
             admin: <FaTools className='ml-2 text-blue-500' key={Math.random()*Date.now()}/>,
-            bughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>,
-            bigbughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>
+            bughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>,
+            bigbughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>
         }
     }
 
