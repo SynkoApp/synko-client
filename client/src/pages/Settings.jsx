@@ -154,7 +154,7 @@ class Profile extends React.Component {
             }
         }).then(res => {
             const { data } = res;
-            this.setState({user: data})
+            this.setState({user: data, baseUser: data})
         }).catch(err => {
             console.log(err);
         });

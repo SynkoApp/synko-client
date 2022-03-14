@@ -105,6 +105,7 @@ export default class Dm extends React.Component {
             this.counter -= 1
         }, 10000);
         let msg = document.querySelector('#msgSender').innerText.trim();
+        console.log(msg)
         if(msg == "" && this.state.attachments.files.length < 1) return;
         if(msg == "" && document.querySelector('#imgInputModal')) {
             msg = document.querySelector('#imgInputModal').value.trim();
@@ -161,7 +162,6 @@ export default class Dm extends React.Component {
             if(data.type == "new_message"){
                 setTimeout(() => {
                     let user = this.state.users.find(u => u.id == data.author);
-                    console.log(user)
                     if(data.content.startsWith('\`\`\`') && data.content.endsWith('\`\`\`')){
                         this.setState({messages : [...this.state.messages, data]})
                     } else $("#messages-box").append(renderToString(<Message deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} isOwner={user.group_permission == 1?true:false} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
@@ -495,7 +495,7 @@ class IdeModal extends React.Component {
                     <div className={'flex w-full mt-2'}>
                         <button onClick={() => {document.querySelector('#ide-modal').classList.replace('flex', 'hidden')}} className={'text-blue-500 underline'}>{lang.closeCode}</button>
                         <div className={'flex-grow'}></div>
-                        <button onClick={e => {e.preventDefault(); this.props.send(this.state.code, this.state.codeLang)}} className={'bg-green-500 font-semibold text-white rounded py-1 px-2'}>{lang.sendCode}</button>
+                        <button onClick={e => {e.preventDefault(); if(!this.state.code) return; this.props.send(this.state.code, this.state.codeLang)}} className={'bg-green-500 font-semibold text-white rounded py-1 px-2'}>{lang.sendCode}</button>
                     </div>
                 </div>
             </div>
