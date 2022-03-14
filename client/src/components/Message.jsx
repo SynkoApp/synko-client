@@ -9,9 +9,7 @@ import emojifier from '../utils/emojifier';
 import UrlParser from 'js-video-url-parser';
 import Player from './Player';
 import { HiDotsHorizontal } from 'react-icons/hi';
-import { FaTools } from 'react-icons/fa'
-import { RiBug2Fill } from 'react-icons/ri'
-import { FaCrown } from 'react-icons/fa'
+import { FaCrown, FaBug, FaTools } from 'react-icons/fa'
 import { clipboard } from '../utils/electron';
 import { API_URL } from '../utils/APIBase';
 import Embed from './Embed'
@@ -27,8 +25,8 @@ export default class Message extends React.Component {
         this.links = []
         this.icons = {
             admin: <FaTools className='ml-2 text-blue-500' key={Math.random()*Date.now()}/>,
-            bughunter: <RiBug2Fill className='ml-2 text-yellow-500' key={Math.random()*Date.now()}/>,
-            bigbughunter: <RiBug2Fill className='ml-2 text-green-500' key={Math.random()*Date.now()}/>
+            bughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>,
+            bigbughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>
         }
     }
 

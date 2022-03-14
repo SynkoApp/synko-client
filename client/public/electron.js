@@ -28,7 +28,6 @@ if (gotTheLock) {
     })
 } else {
     app.quit()
-    return
 }
 
 const schema = {
