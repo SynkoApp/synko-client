@@ -340,7 +340,7 @@ export default class Dm extends React.Component {
             return <Redirect to={this.state.redirect}/>
         }
         if(!this.state.wsIsOpened) return <></>;
-
+        let isAdmin = new Boolean(this.state.users.find(u => u.id == localStorage.getItem('id') && u.badges.includes('admin')))
         return (
             <div className={'overflow-auto h-full flex bg-gray-700'}>
                 <LeftMenu ws={this.state.socket} toHome key={Math.floor(Date.now()*Math.random())}/>
@@ -354,8 +354,8 @@ export default class Dm extends React.Component {
                     <IdeModal send={this.sendCode.bind(this)}/>
                     <div id="messages-box" onDragOver={this.handleDragOver.bind(this)} onDragEnter={this.handleDragStart.bind(this)} className={'flex-grow overflow-auto w-full'}>
                         {this.state.messages.map(m => { 
-                            if(m.content.startsWith('\`\`\`') && m.content.endsWith('\`\`\`')) return <Code deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{m.content}</Code>
-                            else return <Message deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments, links: m.links}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>
+                            if(m.content.startsWith('\`\`\`') && m.content.endsWith('\`\`\`')) return <Code isAdmin={isAdmin} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{m.content}</Code>
+                            else return <Message isAdmin={isAdmin} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments, links: m.links}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>
                         })}
                     </div>
                     <div id="input-ctn" className={'min-h-20 shadow-input py-2 z-30 pt-0 text-center px-4'}>

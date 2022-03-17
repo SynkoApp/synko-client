@@ -90,7 +90,7 @@ export default class Message extends React.Component {
                     <ul className={'rounded absolute msg-dropdown p-1 right-0 top-0 bg-gray-750 z-50 min-w-48 text-gray-300 text-center hidden'}>
                         <li className={'cpy-btn'}><button onClick={() => {clipboard.writeText(this.props.children, "clipboard")}} className={'p-1 w-full rounded hover:bg-gray-600'}>{lang.copy_text}</button></li>
                         <li className={'cid-btn'}><button onClick={() => {clipboard.writeText(`${this.props.message.id}`, "clipboard")}} className={'p-1 w-full rounded hover:bg-gray-600'}>{lang.copy_id}</button></li>
-                        {localStorage.getItem('id') == this.props.author?.id ? 
+                        {(localStorage.getItem('id') == this.props.author?.id || this.props.isAdmin) ? 
                             <li className={'dlt-btn border-t mt-1 pt-1 border-gray-600'}><button onClick={this.deleteMsg.bind(this)} className={'p-1 w-full rounded text-red-500 hover:text-gray-300 hover:bg-red-500'}>{lang.delete_message}</button></li>
                         : <></>}
                     </ul>
