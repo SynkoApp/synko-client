@@ -13,6 +13,7 @@ export default class LeftMenu extends React.Component {
     }
 
     getGroups(){
+        console.log("Perms: "+this.state.permissions)
         axios({
             url : `${API_URL}/getGroups`,
             method : "get",
@@ -22,14 +23,24 @@ export default class LeftMenu extends React.Component {
         }).then(res => {
             let groups = [];
             res.data.groups.forEach(group => {
-                groups.push(<UserButton ws={this.props.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />)
+                groups.push(<UserButton isAdmin={this.state.permissions} ws={this.props.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />)
             })
             this.setState({ groups })
         })
     }
 
+    getPerms(){
+        axios({
+            url : `${API_URL}/users/@me`,
+            method : "get",
+            headers : {
+                "Authorization" : localStorage.getItem("token")
+            }
+        }).then(res => { this.setState({ permissions: res.data.permissions }); this.getGroups() })
+    }
+
     componentDidMount(){
-        this.getGroups()
+        this.getPerms()
         let { ws } = this.props;
         document.addEventListener("click", this.handleClickOutside)
         if(window.location.hash.startsWith('#/dm/')) return
@@ -37,7 +48,7 @@ export default class LeftMenu extends React.Component {
             let data = JSON.parse(msg.data);
             if(data.type == "new_group"){
                 let { group } = data;
-                $("#groups-ctn").append(renderToString(<UserButton ws={this.props.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />));
+                $("#groups-ctn").append(renderToString(<UserButton isAdmin={this.state.permissions} ws={this.props.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />));
             };
         }
     }

@@ -140,7 +140,8 @@ app.get('/users/@me', (req, res) => {
                 username: user.userData.username,
                 email: user.userData.email,
                 profilePic: user.userData.profilePic,
-                status: getStatus(user.uuid)
+                status: getStatus(user.uuid),
+                permissions: user.userData.permissions
             })
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
     } else return res.status(401).json({message: "Unauthorized", code: 'UNAUTHORIZED'});
@@ -901,7 +902,7 @@ wsServer.on('request', function(request) {
                 })
             }
         } else if(socketData.type == "delete_group"){
-            if(groups.get(`${socketData.group}.owner`) == id){
+            if(groups.get(`${socketData.group}.owner`) == id || users.get(`${id}.permissions`) == 1){
                 let participants = [];
                 groups.get(`${socketData.group}`).participants.forEach(p => {
                     participants.push(p);
