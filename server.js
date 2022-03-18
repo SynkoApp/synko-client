@@ -522,6 +522,22 @@ app.get('/latest', (req, res) => {
         } return res.status(401).json({message : "Unauthorized"})
     });
 
+    app.post('/admin/disconnectUser/:id', (req, res) => {
+        if(req.headers.authorization && req.params.id){
+            let id = tokenToID(req.headers.authorization)
+            if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
+            if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
+            onlineUsers.forEach(u => {
+                if(u.uid == req.params.id){
+                    u.ws.send(JSON.stringify({
+                        type: "admin_disconnected",
+                    }));
+                }
+            })
+            return res.status(202).json({message: "Done"})
+        } return res.status(401).json({message : "Unauthorized"})
+    });
+
     app.post('/admin/checkToken', (req, res) => {
         if(req.headers.authorization){
             let id = tokenToID(req.headers.authorization)

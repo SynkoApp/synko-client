@@ -159,6 +159,9 @@ export default class Dm extends React.Component {
         }
         ws.onmessage = msg => {
             let data = JSON.parse(msg.data);
+            if(data.type == "admin_disconnect"){
+                console.log('ok')
+            }
             if(data.type == "new_message"){
                 setTimeout(() => {
                     let user = this.state.users.find(u => u.id == data.author);

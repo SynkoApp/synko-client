@@ -32,6 +32,13 @@ export default class Home extends React.Component {
                         ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection"}))
                         console.log("WebSocket: Connected")
                     }
+
+                    ws.onmessage = msg => {
+                        let data = JSON.parse(msg.data);
+                        if(data.type == "admin_disconnected"){
+                            console.log('ok')
+                        }
+                    }
                     
                     ws.onclose = () => {
                         this.setState({wsIsOpened: false})
