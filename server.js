@@ -572,6 +572,22 @@ app.get('/latest', (req, res) => {
         } else return res.status(403).json({message: "No  token provided"})
     });
 
+    app.get('/admin/onlineUsers', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                let online = []
+                onlineUsers.forEach(u => {
+                    /*u.ws.send(JSON.stringify({
+                        type: "deleted_group",
+                        id: socketData.group
+                    }));*/
+                    online.push(Object.assign(users.get(u.uid), {id: u.uid}))
+                });
+                res.status(200).json({message: "Success", users: online})
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})   
+    })
+
     app.delete('/admin/links', (req, res) => {
         if(req.headers.authorization && req.body.id){
             if(isAdmin(tokenToID(req.headers.authorization))){
