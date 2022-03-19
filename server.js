@@ -64,7 +64,9 @@ app.post('/checkToken', (req, res) => {
     if(req.body.username && req.body.token){
         let { username, token } = req.body
         token = decrypt(token).split('.')
-        if(token[0] == username && !checkUsernameAvailability(username).available && decrypt(checkUsernameAvailability(username).userData.password) == token[1]){
+        let user = checkUsernameAvailability(username)
+        if(user.userData.banned == "1") return res.status(403).json({message : "Banned user", code : 'FORBIDDEN'})
+        if(token[0] == username && !user.available && decrypt(user.userData.password) == token[1]){
             res.status(200).json({message : "Valid token", code : 'OK'})
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
 
@@ -102,6 +104,7 @@ app.post('/login', (req, res) => {
         users.all().forEach(user => {
             let data = users.get(`${user.ID}`)
             if(data.username == username && decrypt(data.password) == password){
+                if(data.banned == "1") return res.status(403).json({message : "Banned user", code : "FORBIDDEN"})
                 isGood = true
                 return res.status(200).json({message : "Valid credentials, user can be logged", code : "OK", id : user.ID, token : CryptoJS.AES.encrypt(`${username}.${password}`, key).toString()})
             } else return 
@@ -505,6 +508,7 @@ app.get('/latest', (req, res) => {
                     profile_pic : data.profilePic,
                     groups : data.groups,
                     perms : data.permissions,
+                    banned : data.banned == "1" ? "Yes" : "No",
                     badges: data.badges || []
                 })
             });
@@ -517,7 +521,7 @@ app.get('/latest', (req, res) => {
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
             if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
-            users.delete(`${req.params.id}`);
+            users.set(`${req.params.id}.banned`, '1');
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
     });

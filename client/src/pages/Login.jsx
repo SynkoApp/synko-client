@@ -39,6 +39,13 @@ export default class Login extends React.Component {
             username : $('input[name="username"]').val(),
             password : $('input[name="password"]').val()
         }
+        if(!userInfos.username || !userInfos.password){
+            $('input[name="username"]').addClass('border').addClass('border-red-500')
+            $('label[for="username"]').addClass('text-red-500')
+            $('input[name="password"]').addClass('border').addClass('border-red-500')
+            $('label[for="password"]').addClass('text-red-500')
+            return 
+        }
         axios({
             url : `${API_URL}/login`,
             method : 'POST',
@@ -51,13 +58,12 @@ export default class Login extends React.Component {
                 this.setState({redirect : "/"})
             } else $('#error').removeClass('hidden').text('An error occured, please try again later')
         }).catch(err => {
-            console.log(err)
             if(err.response.status === 404 || err.response.status === 403 || err.response.status === 401){
                 $('input[name="username"]').addClass('border').addClass('border-red-500')
                 $('label[for="username"]').addClass('text-red-500')
                 $('input[name="password"]').addClass('border').addClass('border-red-500')
                 $('label[for="password"]').addClass('text-red-500')
-                $('#error').removeClass('hidden').text('Invalid credentials')
+                $('#error').removeClass('hidden').text(err.response.data.message)
             } else {
                 $('#error').removeClass('hidden').text('An error occured, please try again later')
             }
