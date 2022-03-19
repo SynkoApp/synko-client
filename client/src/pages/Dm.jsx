@@ -160,7 +160,10 @@ export default class Dm extends React.Component {
         ws.onmessage = msg => {
             let data = JSON.parse(msg.data);
             if(data.type == "admin_disconnect"){
-                console.log('ok')
+                localStorage.removeItem('id')
+                localStorage.removeItem('username')
+                localStorage.removeItem('token')
+                window.location.reload()
             }
             if(data.type == "new_message"){
                 setTimeout(() => {

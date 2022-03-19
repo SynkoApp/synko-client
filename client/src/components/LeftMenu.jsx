@@ -13,7 +13,6 @@ export default class LeftMenu extends React.Component {
     }
 
     getGroups(){
-        console.log("Perms: "+this.state.permissions)
         axios({
             url : `${API_URL}/getGroups`,
             method : "get",

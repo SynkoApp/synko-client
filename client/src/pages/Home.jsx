@@ -35,8 +35,8 @@ export default class Home extends React.Component {
 
                     ws.onmessage = msg => {
                         let data = JSON.parse(msg.data);
-                        if(data.type == "admin_disconnected"){
-                            console.log('ok')
+                        if(data.type == "admin_disconnect"){
+                            // Ici ca fait rien j'sais pas pourquoi
                         }
                     }
                     
