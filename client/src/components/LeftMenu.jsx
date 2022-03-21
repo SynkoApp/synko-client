@@ -5,6 +5,7 @@ import axios from 'axios';
 import {API_URL} from '../utils/APIBase';
 import { renderToString } from 'react-dom/server';
 import $ from 'jquery';
+import { globalWS } from '../utils/functions';
 
 export default class LeftMenu extends React.Component {
     constructor(props){
@@ -45,7 +46,7 @@ export default class LeftMenu extends React.Component {
         if(window.location.hash.startsWith('#/dm/')) return
         ws.onmessage = msg => {
             let data = JSON.parse(msg.data);
-            ws.onHomeMessage(msg)
+            globalWS(msg)
             if(data.type == "new_group"){
                 console.log('ok')
                 this.getGroups()

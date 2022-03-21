@@ -1,3 +1,5 @@
+import { ipcRenderer } from './electron';
+
 export async function checkToken(token, username) {
     let {API_URL} = require('./APIBase')
     let axios = require('axios')
@@ -16,6 +18,18 @@ export async function checkToken(token, username) {
         return await err
       }
     } else return false
+}
+
+export function globalWS(msg){
+  let data = JSON.parse(msg.data);
+  if(data.type == "admin_disconnect"){
+      localStorage.removeItem('id')
+      localStorage.removeItem('username')
+      localStorage.removeItem('token')
+      window.location.reload()
+  } else if(data.type == "update_client"){
+    ipcRenderer.send('update-request');
+  }
 }
 
 export async function checkUpdate() {

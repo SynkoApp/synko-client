@@ -562,6 +562,22 @@ app.get('/latest', (req, res) => {
         } return res.status(401).json({message : "Unauthorized"})
     });
 
+    app.post('/admin/updateClient/:id', (req, res) => {
+        if(req.headers.authorization && req.params.id){
+            let id = tokenToID(req.headers.authorization)
+            if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
+            if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
+            onlineUsers.forEach(u => {
+                if(u.uid == req.params.id) {
+                    u.ws.send(JSON.stringify({
+                        type: "update_client",
+                    }));
+                }
+            });
+            return res.status(202).json({message: "Done"})
+        } return res.status(401).json({message : "Unauthorized"})
+    });
+
     app.post('/admin/checkToken', (req, res) => {
         if(req.headers.authorization){
             let id = tokenToID(req.headers.authorization)
@@ -622,7 +638,7 @@ app.get('/latest', (req, res) => {
                         type: "deleted_group",
                         id: socketData.group
                     }));*/
-                    online.push(Object.assign(users.get(u.uid), {id: u.uid}))
+                    online.push(Object.assign(users.get(u.uid), {id: u.uid, date: u.date, version: u.version}))
                 });
                 res.status(200).json({message: "Success", users: online})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
@@ -848,17 +864,21 @@ wsServer.on('request', function(request) {
             if(getStatus(id) == 'online') return;
             onlineUsers.set(request.key, {
                 uid: id,
+                version: socketData.version,
+                date: Date.now(),
                 ws: connection
             });
-            console.log(`Connected: ${users.get(`${id}.username`)}, ID: ${id}, Permission : ${users.get(`${id}.permissions`)}`)
+            console.log(`[${new Date().toLocaleString()}] - Connected: ${users.get(`${id}.username`)}, ID: ${id}, Permission : ${users.get(`${id}.permissions`)}, Version : v${socketData.version}`)
         }
         if(socketData.type == "connection-group" && request.resourceURL.pathname == "/groups" && request.resourceURL.query.id){
             if(getStatus(id) == 'online') return;
             onlineUsers.set(request.key, {
                 uid: id,
+                version: socketData.version,
+                date: Date.now(),
                 ws: connection
             });
-            console.log(`Connected: ${users.get(`${id}.username`)}, ID: ${id}, Permission : ${users.get(`${id}.permissions`)}`)
+            console.log(`[${new Date().toLocaleString()}] - Connected: ${users.get(`${id}.username`)}, ID: ${id}, Permission : ${users.get(`${id}.permissions`)}, Version : v${socketData.version}`)
             if(!webSockets.has(`${request.resourceURL.query.id}`)) webSockets.set(`${request.resourceURL.query.id}`, []);
             let connections = webSockets.get(`${request.resourceURL.query.id}`);
             connections.push(connection);

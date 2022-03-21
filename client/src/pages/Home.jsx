@@ -8,6 +8,7 @@ import {WS_URL} from '../utils/APIBase';
 import { w3cwebsocket as W3CWebSocket } from "websocket";
 import NewGroup from '../components/NewGroup';
 let lang = require('../languages/lang.config').default[localStorage.getItem('language')||"en"]?.file;
+let { version } = require('../../package.json');
 
 export default class Home extends React.Component {
     constructor(props){
@@ -29,18 +30,8 @@ export default class Home extends React.Component {
                     this.setState({ socket: ws });
                     ws.onopen = () => {
                         this.setState({wsIsOpened: true})
-                        ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection"}))
+                        ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection", version}))
                         console.log("WebSocket: Connected")
-                    }
-
-                    ws.onHomeMessage = msg => {
-                        let data = JSON.parse(msg.data);
-                        if(data.type == "admin_disconnect"){
-                            localStorage.removeItem('id')
-                            localStorage.removeItem('username')
-                            localStorage.removeItem('token')
-                            window.location.reload()
-                        }
                     }
                     
                     ws.onclose = () => {

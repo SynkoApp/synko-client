@@ -10,6 +10,7 @@ import { w3cwebsocket as W3CWebSocket } from "websocket";
 import pkg from "../../package.json";
 import { ipcRenderer } from '../utils/electron';
 let langs = require('../languages/lang.config').default;
+let { version } = require('../../package.json');
 
 export default class Settings extends React.Component {
     constructor(props){
@@ -29,17 +30,8 @@ export default class Settings extends React.Component {
                     this.setState({ socket: ws });
                     ws.onopen = () => {
                         this.setState({wsIsOpened: true})
-                        ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection"}))
+                        ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection", version}))
                         console.log("WebSocket: Connected")
-                    }
-                    ws.onHomeMessage = msg => {
-                        let data = JSON.parse(msg.data);
-                        if(data.type == "admin_disconnect"){
-                            localStorage.removeItem('id')
-                            localStorage.removeItem('username')
-                            localStorage.removeItem('token')
-                            window.location.reload()
-                        }
                     }
                     ws.onclose = () => {
                         console.log('WebSocket: Disconnected. Reconnect will be attempted in 1 second.')

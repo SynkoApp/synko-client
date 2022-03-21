@@ -1,7 +1,7 @@
 import React from 'react';
 import LeftMenu from "../components/LeftMenu";
 import Slider from "../components/Slider";
-import { checkToken } from '../utils/functions';
+import { checkToken, globalWS } from '../utils/functions';
 import { Redirect } from 'react-router-dom';
 import Message from '../components/Message';
 import UserButton from '../components/UserButton';
@@ -16,10 +16,11 @@ import { renderToString } from 'react-dom/server';
 import {retrieveImageFromDataToBase64} from '../utils/functions';
 import ContentEditable from 'react-contenteditable';
 import { clipboard } from '../utils/electron';
-import { BsPlusCircleFill } from 'react-icons/bs'
+import { BsPlusCircleFill } from 'react-icons/bs';
 import IDE from 'react-ace';
 import Code from '../components/Code'
 let lang = require('../languages/lang.config').default[localStorage.getItem('language')||"en"]?.file;
+let { version } = require('../../package.json');
 
 export default class Dm extends React.Component {
     constructor(props){
@@ -105,7 +106,6 @@ export default class Dm extends React.Component {
             this.counter -= 1
         }, 10000);
         let msg = document.querySelector('#msgSender').innerText.trim();
-        console.log(msg)
         if(msg == "" && this.state.attachments.files.length < 1) return;
         if(msg == "" && document.querySelector('#imgInputModal')) {
             msg = document.querySelector('#imgInputModal').value.trim();
@@ -154,17 +154,12 @@ export default class Dm extends React.Component {
         this.setState({socket : ws})
         ws.onopen = () => {
             this.setState({wsIsOpened: true})
-            ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection-group",}))
+            ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection-group", version }))
             console.log("WebSocket: Connected on group")
         }
         ws.onmessage = msg => {
             let data = JSON.parse(msg.data);
-            if(data.type == "admin_disconnect"){
-                localStorage.removeItem('id')
-                localStorage.removeItem('username')
-                localStorage.removeItem('token')
-                window.location.reload()
-            }
+            globalWS(msg)
             if(data.type == "new_message"){
                 setTimeout(() => {
                     let user = this.state.users.find(u => u.id == data.author);
