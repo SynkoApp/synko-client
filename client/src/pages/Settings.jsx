@@ -33,6 +33,13 @@ export default class Settings extends React.Component {
                         console.log("WebSocket: Connected")
                     }
                     ws.onmessage = msg => {
+                        let data = JSON.parse(msg.data);
+                        if(data.type == "admin_disconnect"){
+                            localStorage.removeItem('id')
+                            localStorage.removeItem('username')
+                            localStorage.removeItem('token')
+                            window.location.reload()
+                        }
                     }
                     ws.onclose = () => {
                         console.log('WebSocket: Disconnected. Reconnect will be attempted in 1 second.')
