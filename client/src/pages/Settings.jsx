@@ -32,7 +32,7 @@ export default class Settings extends React.Component {
                         ws.send(JSON.stringify({token:localStorage.getItem('token'), type:"connection"}))
                         console.log("WebSocket: Connected")
                     }
-                    ws.onmessage = msg => {
+                    ws.onHomeMessage = msg => {
                         let data = JSON.parse(msg.data);
                         if(data.type == "admin_disconnect"){
                             localStorage.removeItem('id')

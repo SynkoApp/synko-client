@@ -1,5 +1,5 @@
 import React from 'react';
-import { HiDotsHorizontal } from 'react-icons/hi';
+import { HiDotsHorizontal, HiBan } from 'react-icons/hi';
 import { clipboard } from '../utils/electron';
 import { API_URL } from '../utils/APIBase';
 import IDE from 'react-ace';
@@ -14,7 +14,8 @@ export default class Code extends React.Component {
         this.icons = {
             admin: <FaTools className='ml-2 text-blue-500' key={Math.random()*Date.now()}/>,
             bughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>,
-            bigbughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>
+            bigbughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>,
+            banned: <HiBan className='ml-2 text-red-500' key={Math.random()*Date.now()}/>
         }
     }
 
@@ -49,7 +50,7 @@ export default class Code extends React.Component {
             <div id={'msg-'+this.props.message.id} className={'group w-full flex bg-gray-700 hover:bg-gray-650 mb-2 p-2 pl-4 items-start relative z-0 hover:z-10'}>
                 <img alt={`${this.props.author?.username}'s profile avatar`} className={'rounded-full w-10 h-10 mr-2 cursor-pointer'} src={API_URL+'/proxy/i?url='+this.props.author?.profilePic}/>
                 <div className={'flex flex-col w-full'}>
-                    <h2 className={'text-blue-500 font-medium flex items-end mb-2'}><span className='hover:underline cursor-pointer flex items-center'>{this.props.author?.username}{this.props.isOwner ? <FaCrown className='ml-2 text-yellow-500' /> : ""}{this.props.author?.badges.map(b => this.icons[b])}</span><span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
+                    <h2 className={'text-blue-500 font-medium flex items-end mb-2'}><span className='hover:underline cursor-pointer flex items-center'><span className={`${this.props.author?.badges.includes("banned") ? "text-red-500 line-through" : ""}`}>{this.props.author?.username}</span>{this.props.isOwner ? <FaCrown className='ml-2 text-yellow-500' /> : ""}{this.props.author?.badges.map(b => this.icons[b])}</span><span className={'ml-2 font-normal text-gray-500 text-sm'}>{new Date(this.props.message.date).toLocaleString()}</span></h2>
                     {this.parseCode(this.props.children)}
                 </div>
                 <div className={'w-8 flex justify-right flex-grow right-0 float-right top-2 z-50 sticky'}>
