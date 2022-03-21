@@ -33,10 +33,13 @@ export default class Home extends React.Component {
                         console.log("WebSocket: Connected")
                     }
 
-                    ws.onmessage = msg => {
+                    ws.onHomeMessage = msg => {
                         let data = JSON.parse(msg.data);
                         if(data.type == "admin_disconnect"){
-                            // Ici ca fait rien j'sais pas pourquoi
+                            localStorage.removeItem('id')
+                            localStorage.removeItem('username')
+                            localStorage.removeItem('token')
+                            window.location.reload()
                         }
                     }
                     

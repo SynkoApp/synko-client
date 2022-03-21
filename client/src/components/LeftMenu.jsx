@@ -45,9 +45,10 @@ export default class LeftMenu extends React.Component {
         if(window.location.hash.startsWith('#/dm/')) return
         ws.onmessage = msg => {
             let data = JSON.parse(msg.data);
+            ws.onHomeMessage(msg)
             if(data.type == "new_group"){
-                let { group } = data;
-                $("#groups-ctn").append(renderToString(<UserButton isAdmin={this.state.permissions} ws={this.props.ws} key={Math.floor(Math.random()*Date.now())} owner={group.owner} id={group.id} username={group.name} img={group.avatar} data-tip={group.name} />));
+                console.log('ok')
+                this.getGroups()
             };
         }
     }
