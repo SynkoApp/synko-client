@@ -4,6 +4,7 @@ import { clipboard } from '../utils/electron';
 import { API_URL } from '../utils/APIBase';
 import IDE from 'react-ace';
 import { FaCrown, FaBug, FaTools } from 'react-icons/fa';
+import { BiTestTube } from 'react-icons/bi';
 
 let lang = require('../languages/lang.config').default[localStorage.getItem('language')||"en"]?.file.message;
 
@@ -15,7 +16,8 @@ export default class Code extends React.Component {
             admin: <FaTools className='ml-2 text-blue-500' key={Math.random()*Date.now()}/>,
             bughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>,
             bigbughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>,
-            banned: <HiBan className='ml-2 text-red-500' key={Math.random()*Date.now()}/>
+            banned: <HiBan className='ml-2 text-red-500' key={Math.random()*Date.now()}/>,
+            tester: <BiTestTube className='ml-2 text-orange-400' key={Math.random()*Date.now()}/>
         }
     }
 
