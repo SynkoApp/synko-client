@@ -8,9 +8,9 @@ import xssFilter from 'xss-filters';
 import emojifier from '../utils/emojifier';
 import UrlParser from 'js-video-url-parser';
 import Player from './Player';
+import { BiTestTube } from 'react-icons/bi';
 import { HiDotsHorizontal, HiBan } from 'react-icons/hi';
 import { FaCrown, FaBug, FaTools } from 'react-icons/fa'
-import { BiTestTube } from 'react-icons/bi';
 import { clipboard } from '../utils/electron';
 import { API_URL } from '../utils/APIBase';
 import Embed from './Embed'
@@ -29,7 +29,7 @@ export default class Message extends React.Component {
             bughunter: <FaBug className='ml-2 text-green-500' key={Math.random()*Date.now()}/>,
             bigbughunter: <FaBug className='ml-2 text-cyan-300' key={Math.random()*Date.now()}/>,
             banned: <HiBan className='ml-2 text-red-500' key={Math.random()*Date.now()}/>,
-            tester: <BiTestTube className='ml-2 text-orange-400' key={Math.random()*Date.now()}/>
+            tester: <BiTestTube className="ml-2 text-orange-400" key={Math.random()*Date.now()} />
         }
     }
 

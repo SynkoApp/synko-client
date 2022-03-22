@@ -1,11 +1,11 @@
 {
   "name": "synko",
   "homepage": "./",
-  "isDev": true,
+  "isDev": false,
   "author": "Kunah & GenoWeb",
   "description": "Synko Client is a real-time chat made by Kunah & GenoWeb",
   "main": "./public/electron.js",
-  "version": "1.5.1",
+  "version": "1.5.3",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.1",
