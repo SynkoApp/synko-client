@@ -11,6 +11,7 @@ const httpServer = http.createServer();
 const colors = require('colors')
 const db = require('quick.db');
 const CryptoJS = require('crypto-js');
+const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
 const path = require('path');
@@ -719,6 +720,43 @@ app.get('/latest', (req, res) => {
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})
     });
+
+    app.get('/admin/versions', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                fs.readdir(path.resolve(__dirname, 'files'), (err, files) => {
+                    let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
+                    let executables = files.filter((v => v.split('.').pop() == "exe"));
+                    let versions = [];
+                    executables.forEach(async (f) => {
+                        let path = path.resolve(__dirname, `files/${f}`);
+                        let hash = await hashFile(path);
+                        let file = fs.statSync(path);
+                        console.log()
+                    });
+                });
+                return res.json({"coucou": true});
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})
+    });
+
+    function hashFile(file, algorithm = 'sha512', encoding = 'base64', options) {
+        return new Promise((resolve, reject) => {
+            const hash = crypto.createHash(algorithm);
+            hash.on('error', reject).setEncoding(encoding);
+            fs.createReadStream(
+                file,
+                Object.assign({}, options, {
+                highWaterMark: 1024 * 1024,
+                })
+            ).on('error', reject).on('end', () => {
+                hash.end();
+                resolve(hash.read());
+            }).pipe(hash, {
+                end: false,
+            });
+        });
+    }
 
     function isAdmin(id){
         if(users.get(`${id}.permissions`) != "1") return false
