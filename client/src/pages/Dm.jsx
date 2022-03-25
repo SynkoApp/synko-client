@@ -70,6 +70,7 @@ export default class Dm extends React.Component {
             let tknValidation = await checkToken(localStorage.getItem('token'), localStorage.getItem('username'))
             if(tknValidation.status === 200){
                 this.connect();
+                this.getPerms();
                 return this.getMessages();
             }
         }
@@ -165,7 +166,7 @@ export default class Dm extends React.Component {
                     let user = this.state.users.find(u => u.id == data.author);
                     if(data.content.startsWith('\`\`\`') && data.content.endsWith('\`\`\`')){
                         this.setState({messages : [...this.state.messages, data]})
-                    } else $("#messages-box").append(renderToString(<Message deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} isOwner={user.group_permission == 1?true:false} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
+                    } else $("#messages-box").append(renderToString(<Message isAdmin={this.state.permissions} deleteMsg={this.deleteMessage.bind(this)} newMsg author={user} message={{id: data.id, date: data.date, attachments: data.attachments, links: data.links}} isOwner={user.group_permission == 1?true:false} groupId={this.props.match.params.id} key={data.id}>{xssFilter.inHTMLData(data.content)}</Message>));
                     $(`#msg-${data.id} > div:last-of-type > ul li`).each((i, elem) => {
                         $(elem.children[0]).on('click', () => {
                             if($(elem).hasClass("cpy-btn")) {
@@ -336,12 +337,24 @@ export default class Dm extends React.Component {
         document.querySelector('#ide-modal').classList.replace('flex', 'hidden')
     }
 
+    getPerms(){
+        axios({
+            url : `${API_URL}/users/@me`,
+            method : "get",
+            headers : {
+                "Authorization" : localStorage.getItem("token")
+            }
+        }).then(res => {
+            this.setState({ permissions: res.data.permissions });
+            console.log(res.data)
+        })
+    }
+
     render (){
         if(this.state.redirect){
             return <Redirect to={this.state.redirect}/>
         }
         if(!this.state.wsIsOpened) return <></>;
-        let isAdmin = new Boolean(this.state.users.find(u => u.id == localStorage.getItem('id') && u.badges.includes('admin')))
         return (
             <div className={'overflow-auto h-full flex bg-gray-700'}>
                 <LeftMenu ws={this.state.socket} toHome key={Math.floor(Date.now()*Math.random())}/>
@@ -355,8 +368,8 @@ export default class Dm extends React.Component {
                     <IdeModal send={this.sendCode.bind(this)}/>
                     <div id="messages-box" onDragOver={this.handleDragOver.bind(this)} onDragEnter={this.handleDragStart.bind(this)} className={'flex-grow overflow-auto w-full'}>
                         {this.state.messages.map(m => { 
-                            if(m.content.startsWith('\`\`\`') && m.content.endsWith('\`\`\`')) return <Code isAdmin={isAdmin} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{m.content}</Code>
-                            else return <Message isAdmin={isAdmin} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments, links: m.links}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>
+                            if(m.content.startsWith('\`\`\`') && m.content.endsWith('\`\`\`')) return <Code isAdmin={this.state.permissions} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments}} groupId={this.props.match.params.id} key={m.id}>{m.content}</Code>
+                            else return <Message isAdmin={this.state.permissions} deleteMsg={this.deleteMessage.bind(this)} author={this.state.users.find(u => u.id == m.author)} isOwner={this.state.users.find(u => u.group_permission == 1 && m.author == u.id)?true:false} message={{id: m.id, date: m.date, attachments: m.attachments, links: m.links}} groupId={this.props.match.params.id} key={m.id}>{xssFilter.inHTMLData(m.content)}</Message>
                         })}
                     </div>
                     <div id="input-ctn" className={'min-h-20 shadow-input py-2 z-30 pt-0 text-center px-4'}>
