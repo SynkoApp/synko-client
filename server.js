@@ -732,6 +732,11 @@ app.get('/latest', (req, res) => {
                         let path = path.resolve(__dirname, `files/${f}`);
                         let hash = await hashFile(path);
                         let file = fs.statSync(path);
+                        let version = f.replace('.exe', '').replace('Synko ', '');
+                        versions.push({
+                            version,
+                            date: file.mtime
+                        });
                         console.log()
                     });
                 });
