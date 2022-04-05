@@ -14,7 +14,6 @@ const CryptoJS = require('crypto-js');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
-const path = require('path');
 const UrlParser = require('url-parse');
 const fetch = require('node-fetch');
 const yaml = require('js-yaml');
@@ -26,6 +25,7 @@ let users = new db.table('users');
 let groups = new db.table('groups');
 let links = new db.table('links');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 require('dotenv').config({path : "./.env"});
 let key = process.env.KEY;
 app.use(cors())
@@ -681,6 +681,7 @@ app.get('/latest', (req, res) => {
     app.patch('/admin/links', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
+                if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
                 if(!getLink(req.body.id) || !req.aliases?.find(a => Boolean(getLink(a)))) {
                     Object.keys(req.body.link).forEach(prop => {
                         links.set(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(req.body.id))}.${prop}`, req.body.link[prop]);
@@ -689,7 +690,6 @@ app.get('/latest', (req, res) => {
                 } else {
                     return res.status(403).json({message: "Domain as already registered"})
                 }
-                if(!users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})      
     });
@@ -724,23 +724,39 @@ app.get('/latest', (req, res) => {
     app.get('/admin/versions', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
-                fs.readdir(path.resolve(__dirname, 'files'), (err, files) => {
-                    let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
+                let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
+                fs.readdir(path.resolve(__dirname, 'files'), async (err, files) => {
+                    if(err) return res.send(err);
                     let executables = files.filter((v => v.split('.').pop() == "exe"));
                     let versions = [];
-                    executables.forEach(async (f) => {
-                        let path = path.resolve(__dirname, `files/${f}`);
-                        let hash = await hashFile(path);
-                        let file = fs.statSync(path);
+                    executables.map(async (f) => {
+                        let pathFile = path.resolve(__dirname, `files/${f}`);
+                        let file = fs.statSync(pathFile);
+                        let size = fBytes(file.size, 4);
                         let version = f.replace('.exe', '').replace('Synko ', '');
                         versions.push({
                             version,
-                            date: file.mtime
+                            date: file.mtime,
+                            size: `${size.size} ${size.unit}`,
+                            hash: null
                         });
-                        console.log()
                     });
+                    return res.json({ latest, versions });
                 });
-                return res.json({"coucou": true});
+            } else return res.status(401).json({message: "Not admin or invalid token provided"})
+        } else return res.status(403).json({message: "No token provided"})
+    });
+
+    app.get('/admin/hash/:version', (req, res) => {
+        if(req.headers.authorization){
+            if(isAdmin(tokenToID(req.headers.authorization))){
+                if(!req.params.version) return res.status(403).json({message: "No version provided"})
+                let filePath = path.resolve(__dirname, `files/Synko ${req.params.version}.exe`);
+                if(fs.existsSync(filePath)) {
+                    hashFile(filePath).then(hash => {
+                        return res.json({ version: req.params.version, hash });
+                    })
+                } else return res.status(404).json({message: "Resource not found"})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})
     });
@@ -749,12 +765,9 @@ app.get('/latest', (req, res) => {
         return new Promise((resolve, reject) => {
             const hash = crypto.createHash(algorithm);
             hash.on('error', reject).setEncoding(encoding);
-            fs.createReadStream(
-                file,
-                Object.assign({}, options, {
+            fs.createReadStream(file, Object.assign({}, options, {
                 highWaterMark: 1024 * 1024,
-                })
-            ).on('error', reject).on('end', () => {
+            })).on('error', reject).on('end', () => {
                 hash.end();
                 resolve(hash.read());
             }).pipe(hash, {
@@ -868,6 +881,18 @@ function tokenToID(tkn){
         if(data.username == token[0] && decrypt(data.password) == token[1]) id = user.ID
     })
     return id
+}
+
+function fBytes(bytes, decimals = 2) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return {
+        size: parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
+        unit: sizes[i],
+    }
 }
 
 function getAllValidesUrls(string) {
