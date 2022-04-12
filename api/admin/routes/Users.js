@@ -85,6 +85,18 @@ module.exports = {
             return res.status(202).json({message: "Done"})
         })
 
+        // Update user's client
+        router.post('/update/:id', (req, res) => {
+            app.onlineUsers.forEach(u => {
+                if(u.uid == req.params.id) {
+                    u.ws.send(JSON.stringify({
+                        type: "update_client",
+                    }));
+                }
+            });
+            return res.status(202).json({message: "Done"})
+        })
+
         // Get online users
         router.get(this.path + '/online', (req, res) => {
             let online = []

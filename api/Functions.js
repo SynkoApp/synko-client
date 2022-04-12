@@ -13,6 +13,7 @@ module.exports = class Functions {
         this.fileHasher = require('crypto')
         this.fs = require('fs');
         this.validator = validator
+        this.env = process.env
         this.mailer = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,
@@ -30,7 +31,7 @@ module.exports = class Functions {
         const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
         const i = Math.floor(Math.log(bytes) / Math.log(k));
         return {
-            size: this.parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
+            size: parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
             unit: sizes[i],
         }
     }

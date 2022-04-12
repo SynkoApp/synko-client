@@ -4,12 +4,12 @@
 //Edit test
 const express = require('express')
 const app = express()
-const cors = require('cors')
+//const cors = require('cors')
 const webSocketServer = require('websocket').server;
 const http = require('http');
 const httpServer = http.createServer();
-const colors = require('colors')
-const fileUpload = require('express-fileupload');
+//const colors = require('colors')
+//const fileUpload = require('express-fileupload');
 const fetch = require('node-fetch');
 const yaml = require('js-yaml');
 const { parse: HTML } = require('node-html-parser');
@@ -17,11 +17,11 @@ const { default: axios } = require('axios');
 //const { default: validator } = require('validator');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-let key = process.env.KEY;
-app.use(cors())
+//let key = process.env.KEY;
+/*app.use(cors())
 app.use(express.json())
 app.use(fileUpload())
-app.use('/files', express.static('./files/'));
+app.use('/files', express.static('./files/'));*/
 
 const FILES_STORE = path.join(__dirname, "files/")
 const wsServer = new webSocketServer({httpServer, maxReceivedFrameSize:1024*1024*10, maxReceivedMessageSize:1024*1024*10});
@@ -534,7 +534,7 @@ app.get('/latest', (req, res) => {
         } return res.status(401).json({message : "Unauthorized"})
     });*/
 
-    app.post('/admin/updateClient/:id', (req, res) => {
+    /*app.post('/admin/updateClient/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
@@ -548,24 +548,24 @@ app.get('/latest', (req, res) => {
             });
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
-    });
+    });*/
 
-    app.post('/admin/checkToken', (req, res) => {
+    /*app.post('/admin/checkToken', (req, res) => {
         if(req.headers.authorization){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) == "1") return res.status(200).json({message: "Admin token"})
             else return res.status(401).json({message: "User or invalid token"})
         } else return res.status(401).json({message: "No token provided"}) ;
-    })
+    })*/
 
-    app.post('/admin/login', (req, res) => {
+    /*app.post('/admin/login', (req, res) => {
         if(!req.body.password || !req.body.username) return res.status(401).json({message: "Missing data"})
         let id = tokenToID(CryptoJS.AES.encrypt(`${req.body.username}.${req.body.password}`, key))
         if(id){
             if(users.get(`${id}.permissions`) == "1") return res.status(200).json({message: "Valid admin credentials", tkn : CryptoJS.AES.encrypt(`${req.body.username}.${req.body.password}`, key).toString()})
             else return res.status(401).json({message : "Not admin or invalid credentials"})
         } else return res.status(401).json({message : "Not admin or invalid credentials"})
-    })
+    })*/
 
     // /users/edit
     /*app.patch('/admin/edit/:id', (req, res) => {
