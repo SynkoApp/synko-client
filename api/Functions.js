@@ -1,5 +1,6 @@
 const Database = require('./Database')
 const nodemailer = require('nodemailer')
+const { default: validator } = require('validator');
 require('dotenv').config({path : ".env"});
 
 module.exports = class Functions {
@@ -11,6 +12,7 @@ module.exports = class Functions {
         this.encryptor = require('crypto-js')
         this.fileHasher = require('crypto')
         this.fs = require('fs');
+        this.validator = validator
         this.mailer = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 587,

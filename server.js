@@ -14,7 +14,7 @@ const fetch = require('node-fetch');
 const yaml = require('js-yaml');
 const { parse: HTML } = require('node-html-parser');
 const { default: axios } = require('axios');
-const { default: validator } = require('validator');
+//const { default: validator } = require('validator');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 let key = process.env.KEY;
@@ -518,7 +518,7 @@ app.get('/latest', (req, res) => {
     }); */
 
     // /users/disconnect
-    app.post('/admin/disconnectUser/:id', (req, res) => {
+    /*app.post('/admin/disconnectUser/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
@@ -532,7 +532,7 @@ app.get('/latest', (req, res) => {
             });
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
-    });
+    });*/
 
     app.post('/admin/updateClient/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
@@ -568,7 +568,7 @@ app.get('/latest', (req, res) => {
     })
 
     // /users/edit
-    app.patch('/admin/edit/:id', (req, res) => {
+    /*app.patch('/admin/edit/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
             if(!isAdmin(id)) return res.status(401).json({message: "User or invalid token"});
@@ -579,10 +579,10 @@ app.get('/latest', (req, res) => {
             });
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
-    })
+    })*/
 
     // /users/create
-    app.post('/admin/createUser', (req, res) => {
+    /*app.post('/admin/createUser', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
                 let { username, email, password, permissions } = req.body
@@ -601,24 +601,20 @@ app.get('/latest', (req, res) => {
                 } else return res.status(403).json({message: "Unavailable username", code: "FORBIDDEN"})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No  token provided"})
-    });
+    });*/
 
     // /users/online
-    app.get('/admin/onlineUsers', (req, res) => {
+    /*app.get('/admin/onlineUsers', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
                 let online = []
                 onlineUsers.forEach(u => {
-                    /*u.ws.send(JSON.stringify({
-                        type: "deleted_group",
-                        id: socketData.group
-                    }));*/
                     online.push(Object.assign(users.get(u.uid), {id: u.uid, date: u.date, version: u.version}))
                 });
                 res.status(200).json({message: "Success", users: online})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})   
-    })
+    })*/
 
     /*app.delete('/admin/links', (req, res) => {
         if(req.headers.authorization && req.body.id){

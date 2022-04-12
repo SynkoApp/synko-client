@@ -1,6 +1,7 @@
 module.exports = {
     run(router, app) {
-        router.route('/links')
+        router.route(this.path)
+            // Get certified links
             .get((req, res) => {
                 let allLinks = [];
                 app.db.links.all().forEach(l => {
@@ -22,7 +23,9 @@ module.exports = {
                     allLinks.push(obj);
                 });
                 return res.json(allLinks);
-            }).post((req, res) => {
+            })
+            // Create new certified links
+            .post((req, res) => {
                 let { domain, aliases, desc, why } = req.body;
                 if(!app.getLink(domain) || !aliases.find(a => Boolean(app.getLink(a)))) {
                     app.db.links.set(`${app.encryptor.enc.Base64.stringify(app.encryptor.enc.Utf8.parse(domain))}`, {
@@ -37,7 +40,9 @@ module.exports = {
                 } else {
                     return res.status(403).json({message: "Domain as already registered"})
                 }
-            }).patch((req, res) => {
+            })
+            // Update certified link
+            .put((req, res) => {
                 if(!app.db.users.has(`${req.params.id}`)) return res.status(404).json({message: "User not found"});
                 if(!app.getLink(req.body.id) || !req.aliases?.find(a => Boolean(app.getLink(a)))) {
                     Object.keys(req.body.link).forEach(prop => {
@@ -47,13 +52,14 @@ module.exports = {
                 } else {
                     return res.status(403).json({message: "Domain as already registered"});
                 }
-            }).delete((req, res) => {
+            })
+            // Delete certified link
+            .delete((req, res) => {
                 if(app.db.links.has(`${app.encryptor.enc.Base64.stringify(app.encryptor.enc.Utf8.parse(req.body.id))}`)) {
                     app.db.links.delete(`${app.encryptor.enc.Base64.stringify(app.encryptor.enc.Utf8.parse(req.body.id))}`);
                     return res.status(202).json({message: "Done"});
                 } else return res.status(401).json({message: "Url not found"})
             });
-
-        router.get('/links/:id')
-    }
+    },
+    path: "/links"
 }
