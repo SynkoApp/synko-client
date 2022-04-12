@@ -9,56 +9,26 @@ const webSocketServer = require('websocket').server;
 const http = require('http');
 const httpServer = http.createServer();
 const colors = require('colors')
-const db = require('quick.db');
-const CryptoJS = require('crypto-js');
-const crypto = require('crypto');
-const nodemailer = require('nodemailer');
 const fileUpload = require('express-fileupload');
-const UrlParser = require('url-parse');
 const fetch = require('node-fetch');
 const yaml = require('js-yaml');
-const fs = require('fs');
 const { parse: HTML } = require('node-html-parser');
 const { default: axios } = require('axios');
 const { default: validator } = require('validator');
-let users = new db.table('users');
-let groups = new db.table('groups');
-let links = new db.table('links');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
-require('dotenv').config({path : "./.env"});
 let key = process.env.KEY;
 app.use(cors())
 app.use(express.json())
 app.use(fileUpload())
 app.use('/files', express.static('./files/'));
-let onlineUsers = new Map();
-let webSockets = new Map();
+
 const FILES_STORE = path.join(__dirname, "files/")
 const wsServer = new webSocketServer({httpServer, maxReceivedFrameSize:1024*1024*10, maxReceivedMessageSize:1024*1024*10});
-const transporter = nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 587,
-    auth: {
-        user: process.env.SYNKO_EMAIL,
-        pass: process.env.SYNKO_PASSWORD
-    }
-});
 
 
-/* groups.all().forEach(e => {
-    groups.delete(`${e.ID}`)
-}) */
-
-/*users.all().forEach(e => {
-    users.set(`${e.ID}.badges`, []);
-})*/
-
-function isDigit(digit){return/\d{6}/.test(digit);}
 if(users.has('undefined')) users.delete('undefined');
 
-
-//console.log(getLink("youtu.be"))
 
 // Token checking API (POST)
 app.post('/checkToken', (req, res) => {
@@ -493,7 +463,7 @@ app.get('/latest', (req, res) => {
 |-----------------ADMIN API-----------------|
 \------------------------------------------*/
 
-    app.get('/admin/users', (req, res) => {
+    /* app.get('/admin/users', (req, res) => {
         if(req.headers.authorization){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
@@ -519,8 +489,8 @@ app.get('/latest', (req, res) => {
             return res.status(200).json({users : usersArr})
         } res.status(401).json({message : "Unauthorized"})
     })
-
-    app.delete('/admin/users/:id', (req, res) => {
+ */
+    /* app.delete('/admin/users/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
@@ -535,9 +505,9 @@ app.get('/latest', (req, res) => {
             });
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
-    });
+    }); */
 
-    app.patch('/admin/users/:id', (req, res) => {
+    /* app.patch('/admin/users/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
             if(users.get(`${id}.permissions`) != "1") return res.status(401).json({message: "User or invalid token"});
@@ -545,8 +515,9 @@ app.get('/latest', (req, res) => {
             users.set(`${req.params.id}.banned`, '0');
             return res.status(202).json({message: "Done"})
         } return res.status(401).json({message : "Unauthorized"})
-    });
+    }); */
 
+    // /users/disconnect
     app.post('/admin/disconnectUser/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
@@ -596,6 +567,7 @@ app.get('/latest', (req, res) => {
         } else return res.status(401).json({message : "Not admin or invalid credentials"})
     })
 
+    // /users/edit
     app.patch('/admin/edit/:id', (req, res) => {
         if(req.headers.authorization && req.params.id){
             let id = tokenToID(req.headers.authorization)
@@ -609,6 +581,7 @@ app.get('/latest', (req, res) => {
         } return res.status(401).json({message : "Unauthorized"})
     })
 
+    // /users/create
     app.post('/admin/createUser', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
@@ -630,6 +603,7 @@ app.get('/latest', (req, res) => {
         } else return res.status(403).json({message: "No  token provided"})
     });
 
+    // /users/online
     app.get('/admin/onlineUsers', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
@@ -646,7 +620,7 @@ app.get('/latest', (req, res) => {
         } else return res.status(403).json({message: "No token provided"})   
     })
 
-    app.delete('/admin/links', (req, res) => {
+    /*app.delete('/admin/links', (req, res) => {
         if(req.headers.authorization && req.body.id){
             if(isAdmin(tokenToID(req.headers.authorization))){
                 if(links.has(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(req.body.id))}`)) {
@@ -719,7 +693,7 @@ app.get('/latest', (req, res) => {
                 return res.json(allLinks);
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})
-    });
+    });*/
 
     app.get('/admin/versions', (req, res) => {
         if(req.headers.authorization){
@@ -761,25 +735,6 @@ app.get('/latest', (req, res) => {
         } else return res.status(403).json({message: "No token provided"})
     });
 
-    function hashFile(file, algorithm = 'sha512', encoding = 'base64', options) {
-        return new Promise((resolve, reject) => {
-            const hash = crypto.createHash(algorithm);
-            hash.on('error', reject).setEncoding(encoding);
-            fs.createReadStream(file, Object.assign({}, options, {
-                highWaterMark: 1024 * 1024,
-            })).on('error', reject).on('end', () => {
-                hash.end();
-                resolve(hash.read());
-            }).pipe(hash, {
-                end: false,
-            });
-        });
-    }
-
-    function isAdmin(id){
-        if(users.get(`${id}.permissions`) != "1") return false
-        else return true
-    }
 /*------------------------------------------\
 |--------------END ADMIN API----------------|
 \------------------------------------------*/
@@ -792,124 +747,6 @@ app.get('*', function(req, res) {
 app.listen(process.env.PORT, () => {
     console.info(colors.cyan(`> Serveur connecté sur le port ${process.env.PORT}`));
 })
-
-function getStatus(uid) {
-    let uuid = null;
-    onlineUsers.forEach(u => {
-        if(u.uid == uid) return uuid = true;
-    })
-    return uuid ? 'online' : 'offline';
-}
-
-function forgotPassword(user) {
-    return new Promise(async (resolve, reject) => {
-        let digit = Math.floor(100000 + Math.random() * 900000);
-        await transporter.sendMail({
-            from: '"Synko App" <synko.contact@gmail.com>',
-            to: `${user.email}`,
-            subject: "Password change requested | Synko App",
-            text: `Your 6-digit is : ${digit}\nIf it's not you requested password changing, ignore this email.`,
-            html: `Your 6-digit is : ${digit}<br>If it's not you requested password changing, ignore this email.`
-        });
-        resolve(digit);
-    })
-}
-
-// Username availability checking function
-function checkUsernameAvailability(str){
-    let available = true
-    let userData = null;
-    let uuid;
-    users.all().forEach(user => {
-        let data = users.get(`${user.ID}`)
-        if(data.username == str){
-            available = false;
-            userData = data;
-            uuid = user.ID
-        }
-    })
-    return { available , userData, uuid }
-}
-
-function getLink(link) {
-    let data = null;
-    if(links.has(`${CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(link))}`)) {
-        return link;
-    } else {
-        links.all().forEach(l => {
-            if(links.get(`${l.ID}.aliases`).includes(link)) {
-                data = CryptoJS.enc.Base64.parse(l.ID).toString(CryptoJS.enc.Utf8)
-            }
-        });
-        return data;
-    }
-}
-
-function getUserFromEmail(email) {
-    let userData = null;
-    users.all().forEach(user => {
-        let data = users.get(`${user.ID}`)
-        if(data.email == email){
-            userData = data;
-            userData.id = user.ID;
-        }
-    });
-    return userData;
-}
-
-// Email availability checking function
-function checkEmailAvailability(str){
-    let arr = []
-    users.all().forEach(user => {
-        let data = users.get(`${user.ID}`)
-        arr.push(data.email)
-    })
-    return !arr.includes(str)
-}
-
-// Decrypting function
-function decrypt(str){
-    return CryptoJS.AES.decrypt(str, key).toString(CryptoJS.enc.Utf8)
-}
-
-function tokenToID(tkn){
-    if(!tkn) return null
-    let token = decrypt(tkn).split('.')
-    let id = null;
-    users.all().forEach(user => {
-        let data = users.get(`${user.ID}`)
-        if(data.username == token[0] && decrypt(data.password) == token[1]) id = user.ID
-    })
-    return id
-}
-
-function fBytes(bytes, decimals = 2) {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const dm = decimals < 0 ? 0 : decimals;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return {
-        size: parseFloat((bytes / Math.pow(k, i)).toFixed(dm)),
-        unit: sizes[i],
-    }
-}
-
-function getAllValidesUrls(string) {
-    let regexp = /((https?):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))/g;
-    let founds = string.match(regexp);
-    let urls = [];
-    if(!founds) return [];
-    founds.forEach(url => {
-        if(urls.length >= 5) return;
-        let urlParsed = UrlParser(url, true);
-        let link = getLink(urlParsed.hostname);
-        if(link) {
-            urls.push(url);
-        }
-    });
-    return urls;
-}
 
 wsServer.on('request', function(request) {
     let connection = request.accept(null, request.origin);
