@@ -1,4 +1,4 @@
-module.exports = class {
+module.exports = class Database {
     constructor(){
         this.db = require('quick.db')
         this.users = new this.db.table('users')

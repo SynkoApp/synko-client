@@ -1,5 +1,8 @@
 const Database = require('./Database')
-const nodemailer = require('nodemailer')
+const WebSocket = require('./WebSocket');
+const nodemailer = require('nodemailer');
+const colors = require('colors');
+const httpServer = require('http').createServer();
 const { default: validator } = require('validator');
 require('dotenv').config({path : ".env"});
 
@@ -8,6 +11,7 @@ module.exports = class Functions {
         this.onlineUsers = new Map();
         this.webSockets = new Map()
         this.db = new Database();
+        this.wsServer = new WebSocket({httpServer, maxReceivedFrameSize:1024*1024*10, maxReceivedMessageSize:1024*1024*10}).run();
         this.urlparser = require('url-parse')
         this.encryptor = require('crypto-js')
         this.fileHasher = require('crypto')
@@ -21,6 +25,10 @@ module.exports = class Functions {
                 user: process.env.SYNKO_EMAIL,
                 pass: process.env.SYNKO_PASSWORD
             }
+        });
+
+        httpServer.listen(process.env.WS_PORT, () => {
+            console.log(colors.cyan(`> Serveur WS connecté sur le port ${process.env.WS_PORT}`))
         });
     }
 
