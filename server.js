@@ -5,33 +5,33 @@
 const express = require('express')
 const app = express()
 //const cors = require('cors')
-const webSocketServer = require('websocket').server;
+//const webSocketServer = require('websocket').server;
 const http = require('http');
 const httpServer = http.createServer();
 //const colors = require('colors')
 //const fileUpload = require('express-fileupload');
 const fetch = require('node-fetch');
-const yaml = require('js-yaml');
-const { parse: HTML } = require('node-html-parser');
-const { default: axios } = require('axios');
+//const yaml = require('js-yaml');
+//const { parse: HTML } = require('node-html-parser');
+//const { default: axios } = require('axios');
 //const { default: validator } = require('validator');
-const { v4: uuidv4 } = require('uuid');
-const path = require('path');
+//const { v4: uuidv4 } = require('uuid');
+//const path = require('path');
 //let key = process.env.KEY;
 /*app.use(cors())
 app.use(express.json())
 app.use(fileUpload())
 app.use('/files', express.static('./files/'));*/
 
-const FILES_STORE = path.join(__dirname, "files/")
-const wsServer = new webSocketServer({httpServer, maxReceivedFrameSize:1024*1024*10, maxReceivedMessageSize:1024*1024*10});
+//const FILES_STORE = path.join(__dirname, "files/")
+//const wsServer = new webSocketServer({httpServer, maxReceivedFrameSize:1024*1024*10, maxReceivedMessageSize:1024*1024*10});
 
 
 if(users.has('undefined')) users.delete('undefined');
 
 
 // Token checking API (POST)
-app.post('/checkToken', (req, res) => {
+/*app.post('/checkToken', (req, res) => {
     if(req.body.username && req.body.token){
         let { username, token } = req.body
         token = decrypt(token).split('.')
@@ -40,12 +40,11 @@ app.post('/checkToken', (req, res) => {
         if(token[0] == username && !user.available && decrypt(user.userData.password) == token[1]){
             res.status(200).json({message : "Valid token", code : 'OK'})
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
-
-    } else ;
-})
+    } else return res.status(401).json({message: "Missing data", code: "UNAUTHORIZED"});
+})*/
 
 // Register API (POST)
-app.post('/register', (req, res) => {
+/*app.post('/register', (req, res) => {
     if(req.body.email && req.body.username && req.body.password){
         let { email, username, password } = req.body
         if(checkUsernameAvailability(username).available){
@@ -62,10 +61,10 @@ app.post('/register', (req, res) => {
             } else return res.status(403).json({message: "Unavailable email", code: "FORBIDDEN"})
         } else return res.status(403).json({message: "Unavailable username", code: "FORBIDDEN"})
     } else return res.status(401).json({message: "Missing data", code: "UNAUTHORIZED"})
-})
+})*/
 
 // Login API (POST)
-app.post('/login', (req, res) => {
+/*app.post('/login', (req, res) => {
     if(req.body.username && req.body.password){
         let { username, password } = req.body
         if(checkUsernameAvailability(username).available){
@@ -82,10 +81,10 @@ app.post('/login', (req, res) => {
         })
         if(isGood == false) return res.status(403).json({message : "Invalid credentials", code : "FORBIDDEN"})
     } else return res.status(401).json({message : "Missing data", code : "UNAUTHORIZED"})
-})
+})*/
 
 // Searching users API (POST)
-app.post('/getUsers', (req, res) => {
+/*app.post('/getUsers', (req, res) => {
     let { query } = req.body
     let id = tokenToID(req.headers.authorization)
     let usersArr = [];
@@ -101,9 +100,9 @@ app.post('/getUsers', (req, res) => {
         })
         res.status(200).json({message : "Success", users:usersArr, code:"SUCCESS"})
     } else return res.status(401).json({message : "Empty query", code : "UNAUTHORIZED"}) 
-})
+})*/
 
-app.get('/users/@me', (req, res) => {
+/*app.get('/users/@me', (req, res) => {
     if(req.headers.authorization){
         let token = req.headers.authorization;
         token = decrypt(token).split('.')
@@ -119,9 +118,9 @@ app.get('/users/@me', (req, res) => {
             })
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
     } else return res.status(401).json({message: "Unauthorized", code: 'UNAUTHORIZED'});
-})
+})*/
 
-app.patch('/users/@me', (req, res) => {
+/*app.patch('/users/@me', (req, res) => {
     if(req.headers.authorization){
         let id = tokenToID(req.headers.authorization)
         let password = req.body.user.username ? req.body.password : decrypt(req.headers.authorization).split('.')[1]
@@ -135,9 +134,9 @@ app.patch('/users/@me', (req, res) => {
             } else return res.status(401).json({message: "Wrong credentials", code: 'UNAUTHORIZED'});
         } else return res.status(403).json({message : "Invalid token", code : 'FORBIDDEN'})
     } else return res.status(401).json({message: "Unauthorized", code: 'UNAUTHORIZED'});
-});
+});*/
 
-app.post('/createGroup', (req, res) => {
+/*app.post('/createGroup', (req, res) => {
     let { body } = req;
     if(!decrypt(body.owner)) return res.status(401).json({message : "Invalid token provided"})
     let ownerId = tokenToID(body.owner)
@@ -173,9 +172,9 @@ app.post('/createGroup', (req, res) => {
         groups.set(`${group.id}`, group)
         res.status(200).json({message : "GROUP_CREATED", group_id : group.id})
     }
-});
+});*/
 
-app.get('/getGroups', (req, res) => {
+/*app.get('/getGroups', (req, res) => {
     if(req.headers.authorization){
         let id = tokenToID(req.headers.authorization)
         if(!users.has(`${id}.groups`)) return res.status(401).json({message : "Invalid token provided"})
@@ -193,9 +192,9 @@ app.get('/getGroups', (req, res) => {
         })
         res.status(200).json({groups : formatted_groups})
     } else return res.status(401).json({message : "Invalid token provided"})
-});
+});*/
 
-app.get('/proxy/:type', (req, res) => {
+/*app.get('/proxy/:type', (req, res) => {
     if(!req.query.url) return res.status(400).json({message : "No url provided"});
     switch(req.params.type) {
         case "i":
@@ -269,9 +268,9 @@ app.get('/proxy/:type', (req, res) => {
         default:
             res.sendStatus(404);
     }
-});
+});*/
 
-app.get('/getMessages/:gid', async (req, res) => {
+/*app.get('/getMessages/:gid', async (req, res) => {
     if(req.headers.authorization){
         let id = tokenToID(req.headers.authorization)
         if(!users.has(`${id}`)) return res.status(401).json({message : "Invalid token provided"})
@@ -324,9 +323,9 @@ app.get('/getMessages/:gid', async (req, res) => {
             messages
         })
     } else return res.status(401).json({message : "Invalid token provided"})
-});
+});*/
 
-app.get('/attachments/:gid/:mid/:aid', (req, res) => {
+/*app.get('/attachments/:gid/:mid/:aid', (req, res) => {
     if(req.params.gid && req.params.mid && req.params.aid) {
         let { gid, mid, aid } = req.params;
         if(groups.has(`${gid}`)) {
@@ -347,9 +346,9 @@ app.get('/attachments/:gid/:mid/:aid', (req, res) => {
             } else res.sendStatus(404);
         } else res.sendStatus(404);
     } else res.sendStatus(400);
-})
+})*/
 
-app.post('/updatePassword', (req, res) => {
+/*app.post('/updatePassword', (req, res) => {
     let { body } = req;
     if(body.email && body.digit && body.password) {
         if(!checkEmailAvailability(body.email) && validator.isEmail(body.email)) {
@@ -370,9 +369,9 @@ app.post('/updatePassword', (req, res) => {
             } else return res.status(401).json({message: "No request is pending"})
         } else return res.status(403).json({message: "Unavailable email", code: "FORBIDDEN"});
     } else return res.status(400).json({message: "No email, digit or password provided."});
-})
+})*/
 
-app.post('/forgotPassword', (req, res) => {
+/*app.post('/forgotPassword', (req, res) => {
     let { body } = req;
     if(body.email) {
         if(!checkEmailAvailability(body.email) && validator.isEmail(body.email)) {
@@ -406,9 +405,9 @@ app.post('/forgotPassword', (req, res) => {
             }
         } else res.status(403).json({message: "Unavailable email", code: "FORBIDDEN"});
     } else return res.status(400).json({message: "No email provided."});
-});
+});*/
 
-app.post('/upload', (req, res) => {
+/*app.post('/upload', (req, res) => {
     const authToken = req.headers?.authorization;
     if (!authToken || authToken !== process.env.UPLOAD_KEY) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -438,25 +437,25 @@ app.post('/upload', (req, res) => {
         });
     }
     return res.status(200).json({ message: 'Files were uploaded' });
-});
+});*/
 
-app.get('/download', (req, res) => {
+/*app.get('/download', (req, res) => {
     try {
         let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
         res.download(`./files/${latest.path}`, 'Synko.exe');
     } catch(e) {
         return res.status(502).json({error: e});
     }
-});
+});*/
 
-app.get('/latest', (req, res) => {
+/*app.get('/latest', (req, res) => {
     try {
         let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
         res.json(latest);
     } catch(e) {
         return res.status(502).json({error: e});
     }
-});
+});*/
 
 
 /*------------------------------------------\
@@ -691,7 +690,7 @@ app.get('/latest', (req, res) => {
         } else return res.status(403).json({message: "No token provided"})
     });*/
 
-    app.get('/admin/versions', (req, res) => {
+    /*app.get('/admin/versions', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
                 let latest = yaml.load(fs.readFileSync(path.resolve(__dirname, 'files/latest.yml'), 'utf-8'));
@@ -715,9 +714,9 @@ app.get('/latest', (req, res) => {
                 });
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})
-    });
+    });*/
 
-    app.get('/admin/hash/:version', (req, res) => {
+    /*app.get('/admin/hash/:version', (req, res) => {
         if(req.headers.authorization){
             if(isAdmin(tokenToID(req.headers.authorization))){
                 if(!req.params.version) return res.status(403).json({message: "No version provided"})
@@ -729,7 +728,7 @@ app.get('/latest', (req, res) => {
                 } else return res.status(404).json({message: "Resource not found"})
             } else return res.status(401).json({message: "Not admin or invalid token provided"})
         } else return res.status(403).json({message: "No token provided"})
-    });
+    });*/
 
 /*------------------------------------------\
 |--------------END ADMIN API----------------|
