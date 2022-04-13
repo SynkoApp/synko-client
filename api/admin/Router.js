@@ -2,10 +2,12 @@ let express = require('express');
 let fs = require('fs');
 let path = require('path');
 let router = express.Router();
+const cors = require('cors')
 
 module.exports = {
     handler(app) {
         router.use(express.json())
+        router.use(cors())
         router.use((req, res, next) => {
             if(["/auth/login"].includes(req.path)) next();
             else {
@@ -25,7 +27,6 @@ module.exports = {
                 route.run(router, app);
             });
         });
-
         return router;
     },
     path: "/admin"

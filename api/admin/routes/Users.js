@@ -48,7 +48,7 @@ module.exports = {
         });
 
         router.route(this.path + '/:id')
-            // Delete user
+            // Ban user
             .delete((req, res) => {
                 app.db.users.set(`${req.params.id}.banned`, '1');
                 onlineUsers.forEach(u => {
@@ -60,7 +60,7 @@ module.exports = {
                 });
                 return res.status(202).json({message: "Done"})
             })
-            // Ban user
+            // Unan user
             .patch((req, res) => {
                 app.db.users.set(`${req.params.id}.banned`, '0');
                 return res.status(202).json({message: "Done"})
@@ -86,7 +86,7 @@ module.exports = {
         })
 
         // Update user's client
-        router.post('/update/:id', (req, res) => {
+        router.post(this.path+'/update/:id', (req, res) => {
             app.onlineUsers.forEach(u => {
                 if(u.uid == req.params.id) {
                     u.ws.send(JSON.stringify({

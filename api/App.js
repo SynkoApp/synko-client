@@ -11,11 +11,13 @@ const BaseRouter = require('./base/Router')
 module.exports = class App extends Functions {
     constructor(props) {
         super(props);
+        this.adminRouter = AdminRouter.handler(this)
+        this.baseRouter = BaseRouter.handler(this)
     }
 
     run(port) {
-        app.use(AdminRouter.path, AdminRouter.handler(this));
-        app.use(BaseRouter.path, BaseRouter.handler(this))
+        app.use(AdminRouter.path, this.adminRouter);
+        app.use(BaseRouter.path, this.baseRouter)
         app.use(cors())
         app.use(fileUpload())
         app.use('/files', express.static('./files/'));

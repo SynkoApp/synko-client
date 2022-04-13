@@ -1,0 +1,88 @@
+{
+  "/admin/apis": {
+    "get": "Get all APIs, and their usage"
+  },
+  "/admin/auth/check": {
+    "post": "Check an admin token"
+  },
+  "/admin/auth/login": {
+    "post": "Login as admin"
+  },
+  "/admin/links": {
+    "get": "Get all certified links",
+    "post": "Add a new certified link",
+    "put": "Update a certified link",
+    "delete": "Delete a certified link"
+  },
+  "/admin/users": {
+    "get": "Get users list",
+    "post": "Create a new user"
+  },
+  "/admin/users/:id": {
+    "delete": "Ban an user",
+    "patch": "Unban an user",
+    "put": "Update an user"
+  },
+  "/admin/users/disconnect/:id": {
+    "post": "Disconnect a user (logout)"
+  },
+  "/admin/users/update/:id": {
+    "post": "Update an user's client"
+  },
+  "/admin/users/online": {
+    "get": "Get all online users"
+  },
+  "/admin/versions": {
+    "get": "Get all versions of synko"
+
+  },
+  "/admin/versions/:version": {
+    "delete": "Delete a version of synko"
+  },
+  "/admin/versions/:version/hash": {
+    "get": "Get a version's hash"
+  },
+  "/auth/check": {
+    "post": "Check a user token"
+  },
+  "/auth/login": {
+    "post": "Login as user"
+  },
+  "/auth/register": {
+    "post": "Create a new account"
+  },
+  "/auth/password": {
+    "post": "Forgot password",
+    "put": "Update password"
+  },
+  "/groups": {
+    "get": "Get all groups of an user",
+    "post": "Create a new group"
+  },
+  "/messages/:gid": {
+    "get": "Get all messages of a group"
+  },
+  "/messages/attachments/:gid/:mid/:aid": {
+    "get": "Get a message attachment"
+  },
+  "/proxy/:type": {
+    "get": "Use synko's proxy"
+  },
+  "/users": {
+    "post": "Search users by name"
+  },
+  "/users/@me": {
+    "get": "Get a user profile",
+    "patch": "Update a user profile"
+  },
+  "/upload": {
+    "post": "Post a new version of synko"
+  },
+  "/download": {
+    "get": "Download the latest version of synko"
+  },
+  "/latest": {
+    "get": "Get the latest version of synko"
+  }
+  
+}

@@ -2,9 +2,12 @@ let express = require('express');
 let fs = require('fs');
 let path = require('path');
 let router = express.Router();
+const cors = require('cors')
+
 
 module.exports = {
     handler(app) {
+        router.use(cors())
         router.use(express.json())
 
         fs.readdir(path.resolve(__dirname, './routes/'), (err, files) => {
