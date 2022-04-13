@@ -9,6 +9,7 @@ module.exports = {
         router.use(express.json())
         router.use(cors())
         router.use((req, res, next) => {
+            if(app.disabled_routes.includes(`/admin${req.path}@${req.method.toLowerCase()}`)) return res.status(401).json({message: "This endpoint is temporarily disabled"})
             if(["/auth/login"].includes(req.path)) next();
             else {
                 if(req.headers.authorization) {

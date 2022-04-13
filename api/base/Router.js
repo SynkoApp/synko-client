@@ -9,6 +9,10 @@ module.exports = {
     handler(app) {
         router.use(cors())
         router.use(express.json())
+        router.use((req, res, next) => {
+            if(app.disabled_routes.includes(`${req.path}@${req.method.toLowerCase()}`)) return res.status(401).json({message: "This endpoint is temporarily disabled"})
+            else return next()
+        })
 
         fs.readdir(path.resolve(__dirname, './routes/'), (err, files) => {
             if(err) throw new Error(err);

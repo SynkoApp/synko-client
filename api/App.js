@@ -11,6 +11,7 @@ const BaseRouter = require('./base/Router')
 module.exports = class App extends Functions {
     constructor(props) {
         super(props);
+        this.disabled_routes = [];
         this.adminRouter = AdminRouter.handler(this)
         this.baseRouter = BaseRouter.handler(this)
     }
